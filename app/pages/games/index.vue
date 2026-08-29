@@ -1,6 +1,9 @@
 <template>
   <div class="flex items-center mx-auto h-20 max-w-sm">
-    <SearchBar v-model="searchText" :games-count="data.count" />
+    <SearchBar
+      v-model="searchText"
+      :placeholder="`Search ${gamesCount} games...`"
+    />
   </div>
   <div class="flex items-center gap-2 px-8">
     <GameOrderBy
@@ -13,11 +16,15 @@
       v-model:tags="selectedTags"
       v-model:platforms="selectedPlatforms"
       v-model:stores="selectedStores"
+      v-model:developers="selectedDevelopers"
+      v-model:publishers="selectedPublishers"
       v-model:open-dropdown="openDropdown"
       :options-genres="genres"
       :options-tags="tags"
       :options-platforms="platforms"
       :options-stores="stores"
+      :options-developers="developers"
+      :options-publishers="publishers"
     />
     <button
       v-if="hasFilters"
@@ -29,58 +36,102 @@
       Clear Filters
     </button>
   </div>
-  <div
-    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-7 pt-2 px-5"
-  >
-    <div v-for="game in games" :key="game.id" class="flex justify-center py-2">
-      <Card :image="game.background_image" :name="game.name" :id="game.id" />
+  <Loading v-if="status === 'pending'" />
+  <div v-else>
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-7 pt-2 px-5"
+    >
+      <div
+        v-for="game in games"
+        :key="game.id"
+        class="flex justify-center py-2"
+      >
+        <Card
+          :image="game.background_image"
+          :name="game.name"
+          :link="`/games/${game.id}`"
+        />
+      </div>
     </div>
+    <Pagination
+      class="mt-5 mb-40"
+      :current-page="currentPage"
+      :total-pages="totalPages"
+      @change-page="changePage"
+    />
   </div>
-  <Pagination
-    class="mt-5 mb-40"
-    :current-page="currentPage"
-    :total-pages="totalPages"
-    @change-page="changePage"
-  />
 </template>
 
 <script setup>
-const pageSize = 20;
-const searchText = ref("");
-const searchQuery = ref("");
-const currentPage = ref(1);
+const route = useRoute();
+const router = useRouter();
+const gamesCount = ref(0);
 
-const selectedGenres = ref([]);
-const selectedTags = ref([]);
-const selectedPlatforms = ref([]);
-const selectedStores = ref([]);
+const {
+  currentPage,
+  pageSize,
+  searchText,
+  searchQuery,
+  totalPages,
+  changePage,
+} = useCatalog(gamesCount);
+
+// Función que recoge las querys de la url para buscar por filtros
+// mediante los enlaces de las fichas de juego
+const getQueryIds = (query) => {
+  if (!query) return [];
+
+  return String(query).split(",").map(Number);
+};
+
+// Filtros seleccionados
+const selectedGenres = ref(getQueryIds(route.query.genres));
+const selectedTags = ref(getQueryIds(route.query.tags));
+const selectedPlatforms = ref(getQueryIds(route.query.platforms));
+const selectedStores = ref(getQueryIds(route.query.stores));
+const selectedDevelopers = ref(getQueryIds(route.query.developers));
+const selectedPublishers = ref(getQueryIds(route.query.publishers));
+const selectedCreators = ref(getQueryIds(route.query.creators));
 const selectedOrder = ref("");
 
 const openDropdown = ref(null);
 
+// Transformamos los arrays de filtros en querys para la petición
 const genresQuery = computed(() => {
   return selectedGenres.value.length
     ? selectedGenres.value.join(",")
     : undefined;
 });
-
 const tagsQuery = computed(() => {
   return selectedTags.value.length ? selectedTags.value.join(",") : undefined;
 });
-
 const platformsQuery = computed(() => {
   return selectedPlatforms.value.length
     ? selectedPlatforms.value.join(",")
     : undefined;
 });
-
 const storesQuery = computed(() => {
   return selectedStores.value.length
     ? selectedStores.value.join(",")
     : undefined;
 });
+const developersQuery = computed(() =>
+  selectedDevelopers.value.length
+    ? selectedDevelopers.value.join(",")
+    : undefined,
+);
 
-const { data } = await useFetch("/api/games", {
+const publishersQuery = computed(() =>
+  selectedPublishers.value.length
+    ? selectedPublishers.value.join(",")
+    : undefined,
+);
+
+const creatorsQuery = computed(() =>
+  selectedCreators.value.length ? selectedCreators.value.join(",") : undefined,
+);
+
+const { data, status } = useFetch("/api/games", {
   query: {
     page: currentPage,
     page_size: pageSize,
@@ -93,6 +144,10 @@ const { data } = await useFetch("/api/games", {
     platforms: platformsQuery,
     stores: storesQuery,
     ordering: selectedOrder,
+
+    developers: developersQuery,
+    publishers: publishersQuery,
+    creators: creatorsQuery,
   },
 });
 
@@ -112,47 +167,64 @@ const { data: stores } = await useFetch("/api/stores", {
   transform: (data) => data.results,
 });
 
-const games = computed(() => data.value?.results ?? []);
+const { data: developers } = await useFetch("/api/developers", {
+  transform: (data) => data.results,
+});
 
-const totalPages = computed(() =>
-  Math.ceil((data.value?.count ?? 0) / pageSize),
-);
+const { data: publishers } = await useFetch("/api/publishers", {
+  transform: (data) => data.results,
+});
+
+const games = computed(() => data.value?.results ?? []);
 
 const hasFilters = computed(
   () =>
     selectedGenres.value.length > 0 ||
     selectedTags.value.length > 0 ||
     selectedPlatforms.value.length > 0 ||
-    selectedStores.value.length > 0,
+    selectedStores.value.length > 0 ||
+    selectedDevelopers.value.length > 0 ||
+    selectedPublishers.value.length > 0 ||
+    selectedCreators.value.length > 0,
 );
-
-const changePage = (page) => {
-  currentPage.value = page;
-};
 
 const clearFilters = () => {
   selectedGenres.value = [];
   selectedTags.value = [];
   selectedPlatforms.value = [];
   selectedStores.value = [];
+  selectedDevelopers.value = [];
+  selectedPublishers.value = [];
+  selectedCreators.value = [];
+
   currentPage.value = 1;
 };
 
-watch(searchText, (newSearch, _, onCleanup) => {
-  const timeout = setTimeout(() => {
-    currentPage.value = 1;
-    searchQuery.value = newSearch.trim();
-  }, 400);
-
-  onCleanup(() => {
-    clearTimeout(timeout);
-  });
-});
-
 watch(
-  [genresQuery, tagsQuery, platformsQuery, storesQuery, selectedOrder],
+  [
+    genresQuery,
+    tagsQuery,
+    platformsQuery,
+    storesQuery,
+    developersQuery,
+    publishersQuery,
+    creatorsQuery,
+    selectedOrder,
+  ],
   () => {
     currentPage.value = 1;
   },
 );
+
+// Cambiar estado despues de definir para evitar error is not defined
+watchEffect(() => {
+  gamesCount.value = data.value?.count ?? 0;
+});
+
+// Limpiamos la url cuando pasamos querys
+onMounted(() => {
+  if (Object.keys(route.query).length) {
+    router.replace({ path: "/games" });
+  }
+});
 </script>

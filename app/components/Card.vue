@@ -1,5 +1,5 @@
 <template>
-  <NuxtLink :to="`/games/${id}`" class="block">
+  <NuxtLink :to="link" class="block">
     <article
       class="flex flex-col bg-surface cursor-pointer rounded-lg h-68 w-78 transition duration-200 hover:bg-hover hover:scale-105 hover:shadow-xl"
     >
@@ -21,6 +21,6 @@
 const props = defineProps({
   image: String,
   name: String,
-  id: Number,
+  link: String,
 });
 </script>

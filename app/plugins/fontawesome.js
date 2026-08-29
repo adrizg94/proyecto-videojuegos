@@ -10,7 +10,16 @@ import {
   faChevronRight,
   faChevronDown,
   faFilterCircleXmark,
+  faRankingStar,
+  faGamepad,
 } from "@fortawesome/free-solid-svg-icons";
+
+import {
+  faWindows,
+  faPlaystation,
+  faXbox,
+  faSteam,
+} from "@fortawesome/free-brands-svg-icons";
 
 export default defineNuxtPlugin((nuxtApp) => {
   library.add(
@@ -22,6 +31,12 @@ export default defineNuxtPlugin((nuxtApp) => {
     faChevronRight,
     faChevronDown,
     faFilterCircleXmark,
+    faRankingStar,
+    faWindows,
+    faPlaystation,
+    faXbox,
+    faSteam,
+    faGamepad,
   );
 
   nuxtApp.vueApp.component("FontAwesomeIcon", FontAwesomeIcon);

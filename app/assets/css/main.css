@@ -17,14 +17,28 @@
   --breakpoint-3xl: 120.0625rem;
 }
 
+body {
+  @apply text-white;
+}
+
 /* Custom components */
+/*--------------------------------------------------------------*/
 .btn-primary {
-  @apply text-white font-semibold px-4 py-2 text-left rounded-lg cursor-pointer transition;
+  @apply font-semibold px-4 py-2 text-left rounded-lg cursor-pointer transition;
 }
 
 .btn-number {
-  @apply text-white font-semibold px-3 py-1 text-center rounded-lg cursor-pointer transition enabled:hover:bg-hover disabled:cursor-default;
+  @apply font-semibold px-3 py-1 text-center rounded-lg cursor-pointer transition enabled:hover:bg-hover disabled:cursor-default;
 }
+
+.description h3 {
+  @apply font-semibold text-xl mb-1;
+}
+
+.description p {
+  @apply leading-relaxed mb-6
+}
+/*--------------------------------------------------------------*/
 
 /* Scrollbar */
 /*--------------------------------------------------------------*/

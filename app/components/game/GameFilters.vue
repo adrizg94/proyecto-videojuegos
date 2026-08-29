@@ -31,6 +31,22 @@
       label="Stores"
       :options="optionsStores"
     />
+
+    <GameFilterDropDown
+      v-model:selected="selectedDevelopers"
+      v-model:open-dropdown="openDropdown"
+      dropdown-name="developers"
+      label="Developed by"
+      :options="optionsDevelopers"
+    />
+
+    <GameFilterDropDown
+      v-model:selected="selectedPublishers"
+      v-model:open-dropdown="openDropdown"
+      dropdown-name="publishers"
+      label="Published by"
+      :options="optionsPublishers"
+    />
   </section>
 </template>
 
@@ -40,6 +56,8 @@ const props = defineProps({
   optionsTags: Array,
   optionsPlatforms: Array,
   optionsStores: Array,
+  optionsDevelopers: Array,
+  optionsPublishers: Array,
 });
 
 const selectedGenres = defineModel("genres", {
@@ -58,6 +76,16 @@ const selectedPlatforms = defineModel("platforms", {
 });
 
 const selectedStores = defineModel("stores", {
+  type: Array,
+  default: () => [],
+});
+
+const selectedDevelopers = defineModel("developers", {
+  type: Array,
+  default: () => [],
+});
+
+const selectedPublishers = defineModel("publishers", {
   type: Array,
   default: () => [],
 });
