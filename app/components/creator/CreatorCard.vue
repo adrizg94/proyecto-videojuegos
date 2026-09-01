@@ -5,9 +5,7 @@
     <div class="relative group w-fit mx-auto">
       <NuxtLink :to="link">
         <img
-          :src="
-            creator.image ?? 'https://placehold.co/600x400?text=Image+Not+Found'
-          "
+          :src="creator.image || '/images/no-avatar.svg'"
           :alt="creator.name"
           class="size-40 shrink-0 rounded-full object-cover group-hover:brightness-40 transition"
         />
@@ -19,7 +17,7 @@
       >
         <FontAwesomeIcon
           icon="fa-heart"
-          class="text-3xl transition-colors hover:text-primary-light"
+          class="text-3xl transition hover:text-primary-light hover:scale-110"
         />
       </button>
     </div>

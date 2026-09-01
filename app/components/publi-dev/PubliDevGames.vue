@@ -10,12 +10,12 @@
       >
         <div class="flex items-center gap-2 justify-self-start">
           <img
-            :src="
-              game.background_image ||
-              'https://placehold.co/128x128?text=No+Image'
-            "
+            :src="game.background_image || '/images/no-game.svg'"
             :alt="game.name"
-            class="size-10 shrink-0 rounded-full object-cover"
+            class="size-10 shrink-0 rounded-full"
+            :class="
+              game.background_image ? 'object-cover' : 'object-contain p-1'
+            "
           />
           {{ game.name }}
         </div>

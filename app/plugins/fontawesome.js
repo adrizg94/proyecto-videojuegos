@@ -12,6 +12,14 @@ import {
   faFilterCircleXmark,
   faRankingStar,
   faGamepad,
+  faXmark,
+  faCalendarDay,
+  faCrosshairs,
+  faFilter,
+  faListCheck,
+  faRocket,
+  faArrowLeftLong,
+  faArrowRightLong,
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
@@ -37,6 +45,14 @@ export default defineNuxtPlugin((nuxtApp) => {
     faXbox,
     faSteam,
     faGamepad,
+    faXmark,
+    faCalendarDay,
+    faCrosshairs,
+    faFilter,
+    faListCheck,
+    faRocket,
+    faArrowLeftLong,
+    faArrowRightLong,
   );
 
   nuxtApp.vueApp.component("FontAwesomeIcon", FontAwesomeIcon);

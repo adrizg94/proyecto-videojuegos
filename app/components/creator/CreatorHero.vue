@@ -1,9 +1,7 @@
 <template>
   <header class="flex items-center gap-6 pb-4">
     <img
-      :src="
-        creator.image ?? 'https://placehold.co/600x400?text=Image+Not+Found'
-      "
+      :src="creator.image || '/images/no-avatar.svg'"
       :alt="creator.name"
       class="size-40 shrink-0 rounded-full object-cover"
     />
@@ -15,7 +13,7 @@
         <button type="button" class="cursor-pointer">
           <FontAwesomeIcon
             icon="fa-heart"
-            class="text-4xl transition-colors hover:text-primary-light"
+            class="text-4xl transition hover:text-primary-light hover:scale-110"
             aria-label="Add creator to favorites"
           />
         </button>

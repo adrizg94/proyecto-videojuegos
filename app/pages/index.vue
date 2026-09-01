@@ -1,62 +1,158 @@
 <template>
-  <p class="text-white">Próximos lanzamientos</p>
-  <div class="flex items-center mx-auto h-20 max-w-sm">
-    <SearchBar v-model="searchText" />
+  <IndexHero />
+  <div class="flex justify-center items-center">
+    <IndexCalendar
+      :current-date="currentDate"
+      :selectPeriod="selectedPeriod"
+      :genres="genres"
+      :tags="tags"
+      :platforms="platforms"
+      :stores="stores"
+      :developers="developers"
+      :publishers="publishers"
+      :clear-filters="clearFilters"
+      :has-filters="hasFilters"
+      v-model:selected-genres="selectedGenres"
+      v-model:selected-tags="selectedTags"
+      v-model:selected-platforms="selectedPlatforms"
+      v-model:selected-stores="selectedStores"
+      v-model:selected-developers="selectedDevelopers"
+      v-model:selected-publishers="selectedPublishers"
+      v-model:open-dropdown="openDropdown"
+      @change-period="changePeriod"
+      @go-to-today="goToToday"
+    />
   </div>
-  <div
-    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-7 pt-2 px-5"
-  >
-    <div v-for="game in games" :key="game.id" class="flex justify-center py-2">
-      <Card :image="game.background_image" :name="game.name" :id="game.id" />
+  <Loading v-if="status === 'pending'" />
+  <div v-else>
+    <div class="grid grid-cols-[0.1fr_1fr_0.1fr]">
+      <!-- Anterior periodo -->
+      <button
+        type="button"
+        class="w-fit h-fit self-center cursor-pointer text-text-muted hover:text-primary-light transition-colors translate-x-20"
+        aria-label="Previous date"
+        @click="previousPeriod"
+      >
+        <FontAwesomeIcon icon="fa-arrow-left-long" class="text-3xl" />
+      </button>
+      <!-- Fichas de juegos -->
+      <div
+        class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-6 pt-2"
+      >
+        <div
+          v-for="game in games"
+          :key="game.id"
+          class="flex justify-center py-5"
+        >
+          <GameCard :game="game" :link="`/games/${game.id}`" />
+        </div>
+      </div>
+      <!-- Siguiente periodo -->
+      <button
+        type="button"
+        class="w-fit h-fit self-center cursor-pointer text-text-muted hover:text-primary-light transition-colors translate-x-8"
+        aria-label="Next date"
+        @click="nextPeriod"
+      >
+        <FontAwesomeIcon icon="fa-arrow-right-long" class="text-3xl" />
+      </button>
     </div>
+    <Pagination
+      v-if="games.length"
+      class="my-5"
+      :current-page="currentPage"
+      :total-pages="totalPages"
+      @change-page="changePage"
+    />
   </div>
-  <Pagination
-    class="mt-5 mb-40"
-    :currentPage="currentPage"
-    :totalPages="totalPages"
-    @changePage="changePage"
-  />
 </template>
 
 <script setup>
-const pageSize = 20;
-const searchText = ref("");
-const searchQuery = ref("");
-const currentPage = ref(1);
+import { useReleaseTimeline } from "~/composables/useReleaseTimeline";
 
-const { data } = await useFetch("/api/games", {
+const pageSize = 8;
+const gamesCount = ref(0);
+
+const { currentPage, totalPages, changePage } = useCatalog(gamesCount);
+
+const {
+  selectedPeriod,
+  currentDate,
+  dateRange,
+  changePeriod,
+  nextPeriod,
+  previousPeriod,
+  goToToday,
+} = useReleaseTimeline();
+
+const {
+  openDropdown,
+
+  selectedGenres,
+  selectedTags,
+  selectedPlatforms,
+  selectedStores,
+  selectedDevelopers,
+  selectedPublishers,
+
+  genres,
+  tags,
+  platforms,
+  stores,
+  developers,
+  publishers,
+
+  genresQuery,
+  tagsQuery,
+  platformsQuery,
+  storesQuery,
+  developersQuery,
+  publishersQuery,
+
+  clearFilters,
+  hasFilters,
+} = useFilters(currentPage);
+
+const { data, status } = await useFetch("/api/games", {
   query: {
+    dates: computed(() => `${dateRange.value.start},${dateRange.value.end}`),
+    ordering: "-added",
     page: currentPage,
     page_size: pageSize,
-    search: searchQuery,
-    search_precise: true,
+
+    genres: genresQuery,
+    tags: tagsQuery,
+    platforms: platformsQuery,
+    stores: storesQuery,
+    developers: developersQuery,
+    publishers: publishersQuery,
   },
 });
 
-const games = computed(() => data.value?.results ?? []);
+const games = computed(() => data.value.results);
 
-const totalPages = computed(() =>
-  Math.ceil((data.value?.count ?? 0) / pageSize),
-);
+// Volver a la página inicial cuando se cambia el periodo
+watch([selectedPeriod, currentDate], () => {
+  currentPage.value = 1;
+});
 
-// const searchGames = computed(() => {
-//   return games.value.filter((game) =>
-//     game.name.toLowerCase().includes(searchText.value.toLowerCase()),
-//   );
-// });
-
-const changePage = (page) => {
-  currentPage.value = page;
-};
-
-watch(searchText, (newSearch, _, onCleanup) => {
-  const timeout = setTimeout(() => {
-    currentPage.value = 1;
-    searchQuery.value = newSearch.trim();
-  }, 400);
-
-  onCleanup(() => {
-    clearTimeout(timeout);
-  });
+// Cambiar estado despues de definir para evitar error is not defined
+watchEffect(() => {
+  gamesCount.value = data.value?.count ?? 0;
 });
 </script>
+
+<!-- Querys dinámicos
+const gamesQuery = computed(() => ({
+  ordering: "-added",
+  // exclude_additions: true,
+  page: currentPage.value,
+  page_size: pageSize,
+
+  ...(selectedPeriod.value !== "All time" && {
+    dates: `${dateRange.value.start},${dateRange.value.end}`,
+  }),
+}));
+const { data, status } = await useFetch("/api/games", {
+  query: gamesQuery,
+}); -->

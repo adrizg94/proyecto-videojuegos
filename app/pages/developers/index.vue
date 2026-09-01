@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center mx-auto h-20 max-w-sm">
+  <div class="flex items-center mx-auto h-20 max-w-sm mt-4">
     <SearchBar
       v-model="searchText"
       :placeholder="`Search ${developersCount} developers...`"
@@ -13,7 +13,7 @@
       <div
         v-for="developer in developers"
         :key="developer.id"
-        class="flex justify-center py-2"
+        class="flex justify-center py-3"
       >
         <!-- <Card
           :image="developer.image_background"

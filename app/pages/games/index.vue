@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center mx-auto h-20 max-w-sm">
+  <div class="flex items-center mx-auto h-20 max-w-sm mt-4 mb-1">
     <SearchBar
       v-model="searchText"
       :placeholder="`Search ${gamesCount} games...`"
@@ -44,13 +44,9 @@
       <div
         v-for="game in games"
         :key="game.id"
-        class="flex justify-center py-2"
+        class="flex justify-center py-3"
       >
-        <Card
-          :image="game.background_image"
-          :name="game.name"
-          :link="`/games/${game.id}`"
-        />
+        <GameCard :game="game" :link="`/games/${game.id}`" />
       </div>
     </div>
     <Pagination
@@ -67,6 +63,25 @@ const route = useRoute();
 const router = useRouter();
 const gamesCount = ref(0);
 
+// Función que recoge las querys de la url para buscar por filtros
+// mediante los enlaces de las fichas de juego
+const getQueryIds = (query) => {
+  if (!query) return [];
+
+  return String(query).split(",").map(Number);
+  A;
+};
+
+const initialFilters = {
+  genres: getQueryIds(route.query.genres),
+  tags: getQueryIds(route.query.tags),
+  platforms: getQueryIds(route.query.platforms),
+  stores: getQueryIds(route.query.stores),
+  developers: getQueryIds(route.query.developers),
+  publishers: getQueryIds(route.query.publishers),
+  creators: getQueryIds(route.query.creators),
+};
+
 const {
   currentPage,
   pageSize,
@@ -76,60 +91,35 @@ const {
   changePage,
 } = useCatalog(gamesCount);
 
-// Función que recoge las querys de la url para buscar por filtros
-// mediante los enlaces de las fichas de juego
-const getQueryIds = (query) => {
-  if (!query) return [];
+const {
+  openDropdown,
+  selectedOrder,
 
-  return String(query).split(",").map(Number);
-};
+  selectedGenres,
+  selectedTags,
+  selectedPlatforms,
+  selectedStores,
+  selectedDevelopers,
+  selectedPublishers,
 
-// Filtros seleccionados
-const selectedGenres = ref(getQueryIds(route.query.genres));
-const selectedTags = ref(getQueryIds(route.query.tags));
-const selectedPlatforms = ref(getQueryIds(route.query.platforms));
-const selectedStores = ref(getQueryIds(route.query.stores));
-const selectedDevelopers = ref(getQueryIds(route.query.developers));
-const selectedPublishers = ref(getQueryIds(route.query.publishers));
-const selectedCreators = ref(getQueryIds(route.query.creators));
-const selectedOrder = ref("");
+  genres,
+  tags,
+  platforms,
+  stores,
+  developers,
+  publishers,
 
-const openDropdown = ref(null);
+  genresQuery,
+  tagsQuery,
+  platformsQuery,
+  storesQuery,
+  developersQuery,
+  publishersQuery,
+  creatorsQuery,
 
-// Transformamos los arrays de filtros en querys para la petición
-const genresQuery = computed(() => {
-  return selectedGenres.value.length
-    ? selectedGenres.value.join(",")
-    : undefined;
-});
-const tagsQuery = computed(() => {
-  return selectedTags.value.length ? selectedTags.value.join(",") : undefined;
-});
-const platformsQuery = computed(() => {
-  return selectedPlatforms.value.length
-    ? selectedPlatforms.value.join(",")
-    : undefined;
-});
-const storesQuery = computed(() => {
-  return selectedStores.value.length
-    ? selectedStores.value.join(",")
-    : undefined;
-});
-const developersQuery = computed(() =>
-  selectedDevelopers.value.length
-    ? selectedDevelopers.value.join(",")
-    : undefined,
-);
-
-const publishersQuery = computed(() =>
-  selectedPublishers.value.length
-    ? selectedPublishers.value.join(",")
-    : undefined,
-);
-
-const creatorsQuery = computed(() =>
-  selectedCreators.value.length ? selectedCreators.value.join(",") : undefined,
-);
+  clearFilters,
+  hasFilters,
+} = useFilters(currentPage, initialFilters);
 
 const { data, status } = useFetch("/api/games", {
   query: {
@@ -151,70 +141,7 @@ const { data, status } = useFetch("/api/games", {
   },
 });
 
-const { data: genres } = await useFetch("/api/genres", {
-  transform: (data) => data.results,
-});
-
-const { data: tags } = await useFetch("/api/tags", {
-  transform: (data) => data.results,
-});
-
-const { data: platforms } = await useFetch("/api/platforms", {
-  transform: (data) => data.results,
-});
-
-const { data: stores } = await useFetch("/api/stores", {
-  transform: (data) => data.results,
-});
-
-const { data: developers } = await useFetch("/api/developers", {
-  transform: (data) => data.results,
-});
-
-const { data: publishers } = await useFetch("/api/publishers", {
-  transform: (data) => data.results,
-});
-
 const games = computed(() => data.value?.results ?? []);
-
-const hasFilters = computed(
-  () =>
-    selectedGenres.value.length > 0 ||
-    selectedTags.value.length > 0 ||
-    selectedPlatforms.value.length > 0 ||
-    selectedStores.value.length > 0 ||
-    selectedDevelopers.value.length > 0 ||
-    selectedPublishers.value.length > 0 ||
-    selectedCreators.value.length > 0,
-);
-
-const clearFilters = () => {
-  selectedGenres.value = [];
-  selectedTags.value = [];
-  selectedPlatforms.value = [];
-  selectedStores.value = [];
-  selectedDevelopers.value = [];
-  selectedPublishers.value = [];
-  selectedCreators.value = [];
-
-  currentPage.value = 1;
-};
-
-watch(
-  [
-    genresQuery,
-    tagsQuery,
-    platformsQuery,
-    storesQuery,
-    developersQuery,
-    publishersQuery,
-    creatorsQuery,
-    selectedOrder,
-  ],
-  () => {
-    currentPage.value = 1;
-  },
-);
 
 // Cambiar estado despues de definir para evitar error is not defined
 watchEffect(() => {
@@ -228,3 +155,113 @@ onMounted(() => {
   }
 });
 </script>
+
+<!-- // const selectedOrder = ref("");
+
+// const openDropdown = ref(null);
+
+// Transformamos los arrays de filtros en querys para la petición
+// const genresQuery = computed(() => {
+  //   return selectedGenres.value.length
+  //     ? selectedGenres.value.join(",")
+  //     : undefined;
+  // });
+  // const tagsQuery = computed(() => {
+    //   return selectedTags.value.length ? selectedTags.value.join(",") : undefined;
+    // });
+    // const platformsQuery = computed(() => {
+      //   return selectedPlatforms.value.length
+      //     ? selectedPlatforms.value.join(",")
+      //     : undefined;
+      // });
+      // const storesQuery = computed(() => {
+        //   return selectedStores.value.length
+        //     ? selectedStores.value.join(",")
+        //     : undefined;
+        // });
+        // const developersQuery = computed(() =>
+        //   selectedDevelopers.value.length
+        //     ? selectedDevelopers.value.join(",")
+        //     : undefined,
+        // );
+        
+        // const publishersQuery = computed(() =>
+        //   selectedPublishers.value.length
+        //     ? selectedPublishers.value.join(",")
+        //     : undefined,
+        // );
+        
+        // const creatorsQuery = computed(() =>
+        //   selectedCreators.value.length ? selectedCreators.value.join(",") : undefined,
+        // );
+        // const hasFilters = computed(
+          //   () =>
+          //     selectedGenres.value.length > 0 ||
+          //     selectedTags.value.length > 0 ||
+          //     selectedPlatforms.value.length > 0 ||
+          //     selectedStores.value.length > 0 ||
+          //     selectedDevelopers.value.length > 0 ||
+          //     selectedPublishers.value.length > 0 ||
+          //     selectedCreators.value.length > 0,
+          // );
+          
+          // const clearFilters = () => {
+            //   selectedGenres.value = [];
+            //   selectedTags.value = [];
+            //   selectedPlatforms.value = [];
+            //   selectedStores.value = [];
+            //   selectedDevelopers.value = [];
+            //   selectedPublishers.value = [];
+            //   selectedCreators.value = [];
+            
+            //   currentPage.value = 1;
+            // };
+            
+            // watch(
+              //   [
+              //     genresQuery,
+              //     tagsQuery,
+              //     platformsQuery,
+              //     storesQuery,
+              //     developersQuery,
+              //     publishersQuery,
+              //     creatorsQuery,
+              //     selectedOrder,
+              //   ],
+              //   () => {
+                //     currentPage.value = 1;
+                //   },
+                // );
+                
+                // const { data: genres } = await useFetch("/api/genres", {
+                  //   transform: (data) => data.results,
+                  // });
+                  
+                  // const { data: tags } = await useFetch("/api/tags", {
+                    //   transform: (data) => data.results,
+                    // });
+                    
+                    // const { data: platforms } = await useFetch("/api/platforms", {
+                      //   transform: (data) => data.results,
+                      // });
+                      
+                      // const { data: stores } = await useFetch("/api/stores", {
+                        //   transform: (data) => data.results,
+                        // });
+                
+                        // const { data: developers } = await useFetch("/api/developers", {
+                  //   transform: (data) => data.results,
+                  // });
+                  
+                  // const { data: publishers } = await useFetch("/api/publishers", {
+                    //   transform: (data) => data.results,
+                    // });
+
+                    // Filtros seleccionados
+                    // const selectedGenres = ref(getQueryIds(route.query.genres));
+                    // const selectedTags = ref(getQueryIds(route.query.tags));
+                    // const selectedPlatforms = ref(getQueryIds(route.query.platforms));
+                    // const selectedStores = ref(getQueryIds(route.query.stores));
+                    // const selectedDevelopers = ref(getQueryIds(route.query.developers));
+                    // const selectedPublishers = ref(getQueryIds(route.query.publishers));
+                    // const selectedCreators = ref(getQueryIds(route.query.creators)); -->
