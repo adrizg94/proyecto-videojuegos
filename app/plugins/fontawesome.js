@@ -20,6 +20,10 @@ import {
   faRocket,
   faArrowLeftLong,
   faArrowRightLong,
+  faComment,
+  faRobot,
+  faWandMagicSparkles,
+  faPaperPlane,
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
@@ -53,6 +57,10 @@ export default defineNuxtPlugin((nuxtApp) => {
     faRocket,
     faArrowLeftLong,
     faArrowRightLong,
+    faComment,
+    faRobot,
+    faWandMagicSparkles,
+    faPaperPlane,
   );
 
   nuxtApp.vueApp.component("FontAwesomeIcon", FontAwesomeIcon);

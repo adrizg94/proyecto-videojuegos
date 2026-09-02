@@ -55,6 +55,7 @@
       :total-pages="totalPages"
       @change-page="changePage"
     />
+    <Chatbot />
   </div>
 </template>
 
@@ -69,7 +70,6 @@ const getQueryIds = (query) => {
   if (!query) return [];
 
   return String(query).split(",").map(Number);
-  A;
 };
 
 const initialFilters = {
@@ -121,7 +121,7 @@ const {
   hasFilters,
 } = useFilters(currentPage, initialFilters);
 
-const { data, status } = useFetch("/api/games", {
+const { data, status } = await useFetch("/api/games", {
   query: {
     page: currentPage,
     page_size: pageSize,

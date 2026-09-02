@@ -137,8 +137,20 @@ export const useReleaseTimeline = () => {
     };
   };
 
+  const selectDate = (date) => {
+    const selectedDate = new Date(date);
+
+    timeline.value.currentDates = {
+      Daily: new Date(selectedDate),
+      Weekly: new Date(selectedDate),
+      Monthly: new Date(selectedDate),
+      Yearly: new Date(selectedDate),
+    };
+  };
+
   return {
     selectedPeriod,
+    selectDate,
     currentDate,
     dateRange,
     changePeriod,

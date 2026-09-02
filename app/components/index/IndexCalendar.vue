@@ -29,11 +29,17 @@
     <div
       class="grid grid-cols-[1.2fr_2fr_1fr] items-center px-2 pb-1 border-b-3 border-surface"
     >
-      <!-- Fecha -->
-      <div class="flex gap-3 mr-3">
+      <!-- Calendario -->
+      <div class="relative flex gap-3 mr-3">
+        <Calendar
+          v-if="showCalendar"
+          :current-date="currentDate"
+          @select-date="selectDate"
+        />
         <button
           type="button"
           aria-label="Select date"
+          @click="showCalendar = !showCalendar"
           class="flex items-center gap-1 px-2 py-1 rounded-md cursor-pointer hover:bg-hover/40 hover:text-primary-light transition whitespace-nowrap"
         >
           <span class="text-accent font-semibold text-lg">{{ viewDate }}</span>
@@ -117,6 +123,9 @@
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 const showFilters = ref(false);
+const showCalendar = ref(false);
+
+const period = ["Daily", "Weekly", "Monthly", "Yearly", "Upcoming/TBA"];
 
 const props = defineProps({
   currentDate: Date,
@@ -127,11 +136,11 @@ const props = defineProps({
   stores: Array,
   developers: Array,
   publishers: Array,
-  clearFilters: Object,
-  hasFilters: Object,
+  clearFilters: Function,
+  hasFilters: Boolean,
 });
 
-const emit = defineEmits(["changePeriod", "goToToday"]);
+const emit = defineEmits(["changePeriod", "goToToday", "selectDate"]);
 
 const selectedGenres = defineModel("selectedGenres", {
   type: Array,
@@ -171,18 +180,57 @@ const viewDate = computed(() => {
   const date = new Date(props.currentDate);
 
   if (props.selectPeriod === "Daily") {
-    const month = date.toLocaleString("en-US", {
-      month: "long",
+    // const month = date.toLocaleString("en-US", {
+    //   month: "long",
+    // });
+    // return `${date.getDate()} ${month}`;
+    const currentYear = new Date().getFullYear();
+
+    return date.toLocaleString("en-US", {
+      day: "numeric",
+      month: "short",
+      ...(date.getFullYear() !== currentYear && {
+        year: "numeric",
+      }),
     });
-    return `${date.getDate()} ${month}`;
   }
 
   // Calcular día/mes inicial/final para el periodo semanal
+  // if (props.selectPeriod === "Weekly") {
+  //   const startWeek = new Date(date);
+
+  //   const daysFromMonday = (startWeek.getDay() + 6) % 7;
+  //   startWeek.setDate(startWeek.getDate() - daysFromMonday);
+
+  //   const endWeek = new Date(startWeek);
+  //   endWeek.setDate(endWeek.getDate() + 6);
+
+  //   const startMonth = date.toLocaleString("en-US", {
+  //     month: "short",
+  //   });
+
+  //   const endMonth = endWeek.toLocaleString("en-US", {
+  //     month: "short",
+  //   });
+
+  //   if (date.getMonth() === endWeek.getMonth()) {
+  //     return `${startMonth} ${date.getDate()} – ${endWeek.getDate()}`;
+  //   }
+
+  //   return `${startMonth} ${date.getDate()} – ${endMonth} ${endWeek.getDate()}`;
+  // }
   if (props.selectPeriod === "Weekly") {
-    const endWeek = new Date(date);
+    const currentYear = new Date().getFullYear();
+
+    const startWeek = new Date(date);
+
+    const daysFromMonday = (startWeek.getDay() + 6) % 7;
+    startWeek.setDate(startWeek.getDate() - daysFromMonday);
+
+    const endWeek = new Date(startWeek);
     endWeek.setDate(endWeek.getDate() + 6);
 
-    const startMonth = date.toLocaleString("en-US", {
+    const startMonth = startWeek.toLocaleString("en-US", {
       month: "short",
     });
 
@@ -190,11 +238,23 @@ const viewDate = computed(() => {
       month: "short",
     });
 
-    if (date.getMonth() === endWeek.getMonth()) {
-      return `${startMonth} ${date.getDate()} – ${endWeek.getDate()}`;
+    const startYear = startWeek.getFullYear();
+    const endYear = endWeek.getFullYear();
+
+    // La semana cruza de un año a otro
+    if (startYear !== endYear) {
+      return `${startMonth} ${startWeek.getDate()}, ${startYear} – ${endMonth} ${endWeek.getDate()}, ${endYear}`;
     }
 
-    return `${startMonth} ${date.getDate()} – ${endMonth} ${endWeek.getDate()}`;
+    let range;
+
+    if (startWeek.getMonth() === endWeek.getMonth()) {
+      range = `${startMonth} ${startWeek.getDate()} – ${endWeek.getDate()}`;
+    } else {
+      range = `${startMonth} ${startWeek.getDate()} – ${endMonth} ${endWeek.getDate()}`;
+    }
+
+    return startYear !== currentYear ? `${range}, ${startYear}` : range;
   }
 
   if (props.selectPeriod === "Monthly") {
@@ -219,9 +279,12 @@ const viewDate = computed(() => {
   return "";
 });
 
-const period = ["Daily", "Weekly", "Monthly", "Yearly", "Upcoming/TBA"];
-
 const changePeriod = (periodName) => {
   emit("changePeriod", periodName);
+};
+
+const selectDate = (date) => {
+  emit("selectDate", date);
+  showCalendar.value = false;
 };
 </script>

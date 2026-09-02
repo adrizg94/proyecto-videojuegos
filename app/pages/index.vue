@@ -21,10 +21,11 @@
       v-model:open-dropdown="openDropdown"
       @change-period="changePeriod"
       @go-to-today="goToToday"
+      @select-date="selectDate"
     />
   </div>
   <Loading v-if="status === 'pending'" />
-  <div v-else>
+  <div v-else class="relative">
     <div class="grid grid-cols-[0.1fr_1fr_0.1fr]">
       <!-- Anterior periodo -->
       <button
@@ -64,6 +65,7 @@
       :total-pages="totalPages"
       @change-page="changePage"
     />
+    <Chatbot />
   </div>
 </template>
 
@@ -83,6 +85,7 @@ const {
   nextPeriod,
   previousPeriod,
   goToToday,
+  selectDate,
 } = useReleaseTimeline();
 
 const {
