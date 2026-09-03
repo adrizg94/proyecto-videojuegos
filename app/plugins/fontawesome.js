@@ -24,6 +24,8 @@ import {
   faRobot,
   faWandMagicSparkles,
   faPaperPlane,
+  faUsers,
+  faSignal,
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
@@ -61,6 +63,8 @@ export default defineNuxtPlugin((nuxtApp) => {
     faRobot,
     faWandMagicSparkles,
     faPaperPlane,
+    faUsers,
+    faSignal,
   );
 
   nuxtApp.vueApp.component("FontAwesomeIcon", FontAwesomeIcon);

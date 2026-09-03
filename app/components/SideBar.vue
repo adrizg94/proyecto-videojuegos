@@ -31,6 +31,12 @@
         :class="route.path === '/creators' ? 'bg-primary' : 'hover:bg-hover'"
         >Creators</NuxtLink
       >
+      <NuxtLink
+        to="/steamTest"
+        class="btn-primary"
+        :class="route.path === '/steamTest' ? 'bg-primary' : 'hover:bg-hover'"
+        >Steam TEST</NuxtLink
+      >
     </nav>
   </aside>
 </template>

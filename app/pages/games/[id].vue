@@ -1,18 +1,38 @@
 <template>
-  <div class="w-full max-w-6xl mx-auto px-6 py-8">
+  <div class="relative overflow-hidden">
     <div
-      class="grid grid-cols-1 lg:grid-cols-[minmax(0,1.2fr)_minmax(450px,1fr)] gap-10"
+      v-if="details.background_raw || details.background"
+      class="absolute top-0 left-0 w-full pointer-events-none"
     >
-      <!-- Columna izquierda -->
-      <div class="flex flex-col gap-2">
-        <GameHero :game="game" />
-        <GameInfo :description="englishDescription" />
-        <GameMetadata :game="game" />
-      </div>
-      <!-- Columna derecha -->
-      <div class="flex flex-col gap-2">
-        <GameGallery :trailer="movies" :screenshots="screenshots" />
-        <GameRelatedEntities :game="game" :creators="creators" />
+      <img
+        :src="details.background_raw || details.background"
+        class="w-full h-auto opacity-20"
+      />
+      <div
+        class="absolute inset-x-0 bottom-0 h-80 bg-linear-to-b via-transparent to-background"
+      ></div>
+    </div>
+    <!-- class="absolute inset-0 h-full w-full object-cover opacity-40" -->
+    <div class="relative z-10 w-full max-w-6xl mx-auto px-6 py-8">
+      <div
+        class="grid grid-cols-1 lg:grid-cols-[minmax(0,1.2fr)_minmax(450px,1fr)] gap-10"
+      >
+        <!-- Columna izquierda -->
+        <div class="flex flex-col gap-2">
+          <GameHero :game="game" :details="details" />
+          <GameInfo
+            :description="englishDescription"
+            :details="details"
+            :steam-app-id="steamAppId"
+            :players="players"
+          />
+          <GameMetadata :game="game" />
+        </div>
+        <!-- Columna derecha -->
+        <div class="flex flex-col gap-2">
+          <GameGallery :trailer="movies" :screenshots="screenshots" />
+          <GameRelatedEntities :game="game" :creators="creators" />
+        </div>
       </div>
     </div>
   </div>
@@ -22,18 +42,47 @@ const route = useRoute();
 
 const { data: game } = await useFetch(`/api/games/${route.params.id}`);
 
-const { data: screenshots } = await useFetch(
-  `/api/games/${route.params.id}/screenshots`,
-  {
-    transform: (data) => data.results,
-  },
-);
+// const { data: screenshots } = await useFetch(
+//   `/api/games/${route.params.id}/screenshots`,
+//   {
+//     transform: (data) => data.results,
+//   },
+// );
 
 const { data: creators } = await useFetch(
   `/api/games/${route.params.id}/development-team`,
 );
 
-const { data: movies } = await useFetch("/api/steam/test-trailer");
+// const { data: movies } = await useFetch("/api/steam/test-trailer");
+
+const { data: stores } = await useFetch(
+  `/api/games/${route.params.id}/stores`,
+  {
+    transform: (data) => data.results,
+  },
+);
+
+const steamAppId = computed(() => {
+  const steam = stores.value.find((store) =>
+    store.url.includes("store.steampowered.com"),
+  );
+
+  if (!steam) return null;
+
+  return steam.url.split("/app/")[1].split("/")[0];
+});
+
+const { data: details } = await useFetch(
+  `/api/steam/details/${steamAppId.value}`,
+);
+
+const { data: players } = await useFetch(`/api/steam/players/${steamAppId}`, {
+  transform: (data) => data.response.player_count,
+});
+
+const movies = computed(() => details.value.movies[0]);
+
+const screenshots = computed(() => details.value.screenshots);
 
 const englishDescription = computed(() => {
   return game.value.description_raw?.split("Español")[0].trim();

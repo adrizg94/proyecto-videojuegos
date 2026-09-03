@@ -10,9 +10,10 @@ export default defineNuxtConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-  
+
   runtimeConfig: {
     rawgApiKey: "",
     geminiApiKey: "",
+    steamApiKey: "",
   },
 });

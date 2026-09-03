@@ -4,8 +4,8 @@
     <video
       v-if="trailer"
       controls
-      :poster="trailer.poster"
-      :src="trailer.trailer"
+      :poster="trailer.thumbnail"
+      :src="trailer.hls_h264"
       class="col-span-2 w-full aspect-video object-cover rounded-lg"
     >
       Video not found
@@ -16,7 +16,7 @@
       class="relative group"
     >
       <img
-        :src="screenshot.image"
+        :src="screenshot.path_thumbnail"
         :alt="`Screenshot ${screenshot.id}`"
         class="w-full h-40 object-cover rounded-lg transition cursor-pointer hover:scale-110"
         @click="openScreenshot(index)"

@@ -20,7 +20,7 @@
       <img
         v-for="(screenshot, index) in screenshots"
         :key="screenshot.id"
-        :src="screenshot.image"
+        :src="screenshot.path_thumbnail"
         :alt="`Screenshot ${screenshot.id}`"
         @click="selectedIndex = index"
         class="w-110 object-cover rounded-lg transition cursor-pointer hover:brightness-80"

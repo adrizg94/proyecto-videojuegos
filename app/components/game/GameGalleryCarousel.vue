@@ -30,7 +30,7 @@
 
     <!-- Imagen -->
     <img
-      :src="screenshots[currentIndex].image"
+      :src="screenshots[currentIndex].path_full"
       :alt="`Screenshot ${screenshots[currentIndex].id}`"
       class="max-w-[85vw] max-h-[90vh] object-contain rounded-lg"
     />
