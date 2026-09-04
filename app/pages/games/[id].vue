@@ -1,11 +1,11 @@
 <template>
   <div class="relative overflow-hidden">
     <div
-      v-if="details.background_raw || details.background"
+      v-if="details?.background_raw || details?.background"
       class="absolute top-0 left-0 w-full pointer-events-none"
     >
       <img
-        :src="details.background_raw || details.background"
+        :src="details?.background_raw || details?.background"
         class="w-full h-auto opacity-20"
       />
       <div
@@ -27,10 +27,25 @@
             :players="players"
           />
           <GameMetadata :game="game" />
+          <GameSteamPress
+            v-if="details?.reviews"
+            :reviews="details.reviews"
+            class="mt-8"
+          />
+          <!-- <GameSteamAchievements
+            v-if="details?.achievements"
+            :achievements="details.achievements"
+            class="mt-8"
+          /> -->
+          <GameSteamReviews v-if="reviews" :reviews="reviews" class="mt-8" />
         </div>
         <!-- Columna derecha -->
         <div class="flex flex-col gap-2">
-          <GameGallery :trailer="movies" :screenshots="screenshots" />
+          <GameGallery
+            v-if="details"
+            :trailer="movies"
+            :screenshots="screenshots"
+          />
           <GameRelatedEntities :game="game" :creators="creators" />
         </div>
       </div>
@@ -58,7 +73,7 @@ const { data: creators } = await useFetch(
 const { data: stores } = await useFetch(
   `/api/games/${route.params.id}/stores`,
   {
-    transform: (data) => data.results,
+    transform: (data) => data.results ?? [],
   },
 );
 
@@ -72,20 +87,40 @@ const steamAppId = computed(() => {
   return steam.url.split("/app/")[1].split("/")[0];
 });
 
-const { data: details } = await useFetch(
-  `/api/steam/details/${steamAppId.value}`,
-);
+const details = ref(null);
+const players = ref(null);
+const reviews = ref(null);
 
-const { data: players } = await useFetch(`/api/steam/players/${steamAppId}`, {
-  transform: (data) => data.response.player_count,
-});
+// Solo pedir datos de Steam si el juego está en Steam
+if (steamAppId.value) {
+  const { data: detailsData } = await useFetch(
+    `/api/steam/details/${steamAppId.value}`,
+  );
+  details.value = detailsData.value;
 
-const movies = computed(() => details.value.movies[0]);
+  const { data: playersData } = await useFetch(
+    `/api/steam/players/${steamAppId.value}`,
+    {
+      transform: (data) => data.response.player_count ?? null,
+    },
+  );
+  players.value = playersData.value;
 
-const screenshots = computed(() => details.value.screenshots);
+  const { data: reviewsData } = await useFetch(
+    `/api/steam/reviews/${steamAppId.value}`,
+    {
+      transform: (data) => data.reviews ?? null,
+    },
+  );
+  reviews.value = reviewsData.value;
+}
+
+const movies = computed(() => details.value.movies[0]) ?? [];
+
+const screenshots = computed(() => details.value.screenshots) ?? null;
 
 const englishDescription = computed(() => {
-  return game.value.description_raw?.split("Español")[0].trim();
+  return game.value.description_raw?.split("Español")[0].trim() ?? "";
 });
 
 // Función para recoger trailers de la API de rawg, la API a penas devuelve trailers, buscar otra fuente

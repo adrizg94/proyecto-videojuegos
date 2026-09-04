@@ -12,10 +12,10 @@
         <FontAwesomeIcon v-if="hasXbox" :icon="['fab', 'xbox']" />
       </div>
       <img
-        v-if="pegiIcons[details.ratings?.pegi?.rating]"
-        :src="pegiIcons[details.ratings?.pegi?.rating]"
-        :alt="`PEGI ${details.ratings?.pegi?.rating}`"
-        :title="`PEGI ${details.ratings?.pegi?.rating}`"
+        v-if="pegiIcons[details?.ratings?.pegi?.rating]"
+        :src="pegiIcons[details?.ratings?.pegi?.rating]"
+        :alt="`PEGI ${details?.ratings?.pegi?.rating}`"
+        :title="`PEGI ${details?.ratings?.pegi?.rating}`"
         class="h-9"
       />
     </div>
@@ -26,15 +26,15 @@
       >
       <span class="font-semibold">{{ ratingValue }}</span>
       <a
-        v-if="details.metacritic?.url"
-        :href="details.metacritic?.url"
+        v-if="details?.metacritic?.url"
+        :href="details?.metacritic?.url"
         class="group flex items-center gap-1 ml-4"
       >
         <span class="group-hover:text-primary-light transition-colors"
           >Metacritic</span
         >
         <span class="rounded px-1.5 py-0.5 bg-surface/70 font-semibold">{{
-          details.metacritic?.score
+          details?.metacritic?.score
         }}</span></a
       >
     </div>
@@ -44,7 +44,10 @@
 <script setup>
 const props = defineProps({
   game: Object,
-  details: Object,
+  details: {
+    type: Object,
+    default: null,
+  },
 });
 
 const pegiIcons = {
@@ -61,12 +64,6 @@ const ratingValue = computed(() => {
   if (props.game.rating >= 3) return "Good";
   if (props.game.rating >= 2) return "Average";
   return "Poor";
-});
-
-const pegi = computed(() => {
-  const rating = props.details.ratings?.pegi?.rating;
-
-  return pegiIcons[rating] ?? null;
 });
 
 const hasPC = computed(() =>

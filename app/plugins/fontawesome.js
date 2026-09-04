@@ -26,6 +26,8 @@ import {
   faPaperPlane,
   faUsers,
   faSignal,
+  faThumbsUp,
+  faThumbsDown,
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
@@ -65,6 +67,8 @@ export default defineNuxtPlugin((nuxtApp) => {
     faPaperPlane,
     faUsers,
     faSignal,
+    faThumbsUp,
+    faThumbsDown,
   );
 
   nuxtApp.vueApp.component("FontAwesomeIcon", FontAwesomeIcon);
