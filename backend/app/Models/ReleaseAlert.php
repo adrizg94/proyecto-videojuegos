@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TestFav extends Model
+class ReleaseAlert extends Model
 {
-    protected $fillable = ['rawg_id'];
+    //
 }

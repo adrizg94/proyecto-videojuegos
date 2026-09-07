@@ -65,12 +65,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits([
-  "addFavorite",
-  "removeFavorite",
-  "addFavoriteTest",
-  "removeFavoriteTest",
-]);
+const emit = defineEmits(["addFavorite", "removeFavorite"]);
 
 const background = computed(
   () => props.game?.background_image ?? props.entity?.image_background,
@@ -106,9 +101,15 @@ const showReleaseAlert = computed(() => {
 
 const toggleFavorite = () => {
   if (props.isFavorite) {
-    emit("removeFavoriteTest", id.value);
+    emit("removeFavorite", id.value);
   } else {
-    emit("addFavoriteTest", id.value);
+    emit(
+      "addFavorite",
+      id.value,
+      name.value,
+      props.game?.released,
+      background.value,
+    );
   }
 };
 

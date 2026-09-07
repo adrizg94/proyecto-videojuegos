@@ -2,6 +2,10 @@
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineNuxtConfig({
+  devServer: {
+    host: "localhost",
+    port: 3000,
+  },
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
 
@@ -16,7 +20,7 @@ export default defineNuxtConfig({
     geminiApiKey: "",
     steamApiKey: "",
     public: {
-      api: "http://127.0.0.1:8000",
+      api: "http://localhost:8000",
     },
   },
 });

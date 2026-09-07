@@ -18,4 +18,10 @@ import SideBar from "~/components/SideBar.vue";
 import TopBar from "~/components/TopBar.vue";
 
 const { isLoading } = useLoadingIndicator();
+
+const { fetchUser } = useAuth();
+
+onMounted(() => {
+  fetchUser();
+});
 </script>

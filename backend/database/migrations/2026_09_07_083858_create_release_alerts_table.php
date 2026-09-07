@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('test_favs', function (Blueprint $table) {
+        Schema::create('release_alerts', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('rawg_id')->unique();
             $table->timestamps();
         });
     }
@@ -23,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('test_favs');
+        Schema::dropIfExists('release_alerts');
     }
 };

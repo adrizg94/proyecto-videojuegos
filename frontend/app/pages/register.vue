@@ -83,8 +83,15 @@
         >
           Register
         </button>
+        <p class="text-sm text-right text-text-muted">
+          Already have an account?
+          <NuxtLink to="/login" class="hover:text-primary-light text-white"
+            >Log in</NuxtLink
+          >
+        </p>
       </form>
     </div>
+    <Toast />
   </section>
 </template>
 
@@ -100,6 +107,10 @@ const passwordNotLength = ref(false);
 let passwordTimeout;
 const config = useRuntimeConfig();
 
+const { showToast } = useToast();
+const { setUser } = useAuth();
+const { apiFetch } = useApi();
+
 const register = async () => {
   if (password.value !== passwordConfirmation.value) {
     passwordMismatch.value = true;
@@ -111,9 +122,32 @@ const register = async () => {
   }
 
   try {
-    const response = await $fetch(`${config.public.api}/api/register`, {
-      method: "POST",
+    // await $fetch(`${config.public.api}/sanctum/csrf-cookie`, {
+    //   credentials: "include",
+    // });
 
+    // const xsrfToken = useCookie("XSRF-TOKEN");
+
+    // const response = await $fetch(`${config.public.api}/api/register`, {
+    //   method: "POST",
+
+    //   credentials: "include",
+
+    //   headers: {
+    //     Accept: "application/json",
+    //     "X-XSRF-TOKEN": decodeURIComponent(xsrfToken.value),
+    //   },
+
+    //   body: {
+    //     username: username.value,
+        // email: email.value,
+        // password: password.value,
+        // password_confirmation: passwordConfirmation.value,
+    //   },
+    // });
+
+    const response = await apiFetch("/register", {
+      method: "POST",
       body: {
         username: username.value,
         email: email.value,
@@ -122,9 +156,11 @@ const register = async () => {
       },
     });
 
-    console.log(response);
+    setUser(response.user);
+    showToast(response.message);
+    await navigateTo("/");
   } catch (error) {
-    console.error(error);
+    showToast(`ERROR: ${error.data?.message ?? "Error creating user"}`);
   }
 };
 

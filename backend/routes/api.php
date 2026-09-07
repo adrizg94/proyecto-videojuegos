@@ -2,22 +2,31 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\GameController;
 use App\Http\Controllers\TestFavController;
-use App\Models\TestFav;
+use App\Http\Controllers\UserController;
+use Illuminate\Http\Request;
 // use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/favorites', [FavoriteController::class, 'index']);
-    Route::post('/favorites', [FavoriteController::class, 'store']);
-    Route::delete('/favorites/{rawgId}', [FavoriteController::class, 'destroy']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/user', [UserController::class, 'show']);
+    Route::apiResource('favorites', FavoriteController::class);
+    Route::apiResource('games', GameController::class);
 });
 
+// Route::middleware('auth:sanctum')->group(function () {
+//     Route::get('/favorites', [FavoriteController::class, 'index']);
+//     Route::post('/favorites', [FavoriteController::class, 'store']);
+//     Route::delete('/favorites/{rawgId}', [FavoriteController::class, 'destroy']);
+// });
+
 // Sin middleware, cambiar
-Route::resource('favorites', FavoriteController::class);
-Route::resource('test_favs', TestFavController::class);
+// Route::resource('test_favs', TestFavController::class);
 // Route::get('/favorites', [FavoriteController::class, 'index']);
 // Route::post('/favorites', [FavoriteController::class, 'store']);
 // Route::delete('/favorites/{rawgId}', [FavoriteController::class, 'destroy']);

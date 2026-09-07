@@ -48,9 +48,9 @@
           <Card
             :game="game"
             :link="`/games/${game.id}`"
-            @add-favorite-test="addFavoriteTest"
-            @remove-favorite-test="removeFavoriteTest"
-            :is-favorite="favoriteIdsTest?.includes(game.id)"
+            @add-favorite="addFavorite"
+            @remove-favorite="removeFavorite"
+            :is-favorite="favoriteIds?.includes(game.id)"
           />
           <!-- :is-favorite="favoriteIds?.includes(game.id)" -->
         </div>
@@ -74,6 +74,7 @@
     />
     <Chatbot />
   </div>
+  <Toast />
 </template>
 
 <script setup>
@@ -141,62 +142,123 @@ const { data, status } = await useFetch("/api/games", {
   },
 });
 
+const { showToast } = useToast();
+const { apiFetch } = useApi();
+
 // const { data: favoriteIds } = await useFetch(
 //   `${config.public.api}/api/favorites`,
+//   {
+//     // server: false,
+//     credentials: "include",
+
+//     headers: {
+//       Accept: "application/json",
+//     },
+//     transform: (data) => data.map((fav) => fav.rawg_id),
+//   },
 // );
-const { data: favoriteIdsTest } = await useFetch(
-  `${config.public.api}/api/test_favs`,
-  {
-    transform: (data) => data.map((fav) => fav.rawg_id),
+const { data: favoriteIds } = await useAsyncData(
+  "favorites",
+  async () => {
+    const data = await apiFetch("/favorites");
+
+    return data.map((fav) => fav.rawg_id);
   },
+  { server: false },
 );
 
 // const favoriteIdsTest = computed(() => {
 //   return favoriteIdsTestRaw.value.map((fav) => fav.rawg_id);
 // });
 
-const addFavoriteTest = async (id) => {
-  $fetch(`${config.public.api}/api/test_favs`, {
-    method: "POST",
-    body: {
-      rawg_id: id,
-    },
-  });
-  favoriteIdsTest.value = [...favoriteIdsTest.value, id];
-};
-
-const removeFavoriteTest = async (id) => {
-  $fetch(`${config.public.api}/api/test_favs/${id}`, {
-    method: "DELETE",
-  });
-  favoriteIdsTest.value = favoriteIdsTest.value.filter(
-    (favoriteId) => favoriteId !== id,
-  );
-};
-
-console.log(favoriteIdsTest.value);
-
-const addFavorite = async (id, name, background) => {
+const addFavorite = async (id, name, released, background) => {
   try {
-    const response = await $fetch(`${config.public.api}/api/favorites`, {
+    const response = await apiFetch("/favorites", {
       method: "POST",
+
       body: {
         rawg_id: id,
         name: name,
+        release_date: released,
         image: background,
       },
     });
-    console.log(response);
+
+    favoriteIds.value = [...favoriteIds.value, id];
+
+    showToast(response.message);
   } catch (error) {
-    console.error(error);
+    showToast(
+      `ERROR: ${error.data?.message ?? "Error adding game to favorites"}`,
+    );
   }
 };
 
-const removeFavorite = async () => {
-  await $fetch(`${config.public.api}/api/favorites/${props.game.id}`, {
-    method: "DELETE",
-  });
+const removeFavorite = async (id) => {
+  try {
+    const response = await apiFetch(`/favorites/${id}`, {
+      method: "DELETE",
+    });
+    favoriteIds.value = favoriteIds.value.filter(
+      (favoriteId) => favoriteId !== id,
+    );
+
+    showToast(response.message);
+  } catch (error) {
+    showToast(
+      `ERROR: ${
+        error.data?.message ??
+        error.message ??
+        "Error removing game from favorites"
+      }`,
+    );
+  }
 };
+
+// Mostrar toast tras añadir o eliminar de favoritos
+// const toast = ref({
+//   show: false,
+//   message: "",
+// });
+
+// let toastTimeout;
+
+// const showToast = (message) => {
+//   clearTimeout(toastTimeout);
+
+//   toast.value = {
+//     show: true,
+//     message,
+//   };
+
+//   toastTimeout = setTimeout(() => {
+//     toast.value.show = false;
+//   }, 3000);
+// };
+
+// console.log(favoriteIdsTest.value);
+
+// const addFavorite = async (id, name, background) => {
+//   try {
+//     const response = await $fetch(`${config.public.api}/api/favorites`, {
+//       method: "POST",
+//       body: {
+//         rawg_id: id,
+//         name: name,
+//         image: background,
+//       },
+//     });
+//     console.log(response);
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
+
+// const removeFavorite = async () => {
+//   await $fetch(`${config.public.api}/api/favorites/${props.game.id}`, {
+//     method: "DELETE",
+//   });
+// };
 
 // const isFavorite = computed(() => favoriteIds.value?.includes(props.game?.id));
 

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Favorite;
+use App\Http\Requests\StoreGameRequest;
 use App\Models\Game;
 use Illuminate\Http\Request;
 
@@ -13,21 +13,7 @@ class FavoriteController extends Controller
      */
     public function index(Request $request)
     {
-
-        // Sin middleware, cambiar
-        $favorites = Favorite::all();
-        return $favorites;
-
-
-
-
-
-        // $favorites = $request->user()
-        //     ->favoriteGames()
-        //     ->pluck('rawg_id');
-
-        // return response()->json($favorites);
-
+        return $request->user()->favoriteGames()->get();
     }
 
     /**
@@ -41,32 +27,38 @@ class FavoriteController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreGameRequest $request)
     {
-        $data = $request->validate([
-            'rawg_id' => ['required', 'integer'],
-            'name' => ['required', 'string'],
-            'background_image' => ['nullable', 'string'],
-        ]);
+        $data = $request->validated();
 
-        // $game = Game::firstOrCreate(
-        //     [
-        //         'rawg_id' => $data['rawg_id'],
-        //     ],
-        //     [
-        //         'name' => $data['name'],
-        //         'background_image' => $data['background_image'] ?? null,
-        //     ]
-        // );
+        // Busca si existe el juego antes de crearlo en MySQL, busca por rawg_id,
+        // si no existe usa los campos name y background_image para crearlo,
+        // si existe actualiza los datos, ya que los datos de rawg podrían cambiar.
+        // $game = Game::updateOrCreate($request->validated());
+        $game = Game::updateOrCreate(
+            [
+                'rawg_id' => $data['rawg_id'],
+            ],
+            [
+                'name' => $data['name'],
+                'image' => $data['image'] ?? null,
+                'release_date' => $data['release_date'] ?? null,
+            ]
+        );
 
-        // $request->user()
-        //     ->favoriteGames()
-        //     ->syncWithoutDetaching([$game->id]);
+        // Crea la relación entre games y users en favorites, en este caso
+        // relaciona con el id 1 de usuarios para pruebas
+        // $game->favoritedByUsers()
+        //     ->syncWithoutDetaching([1]);
+        $request->user()
+            ->favoriteGames()
+            ->syncWithoutDetaching([$game->id]);
 
         return response()->json([
             'message' => 'Game added to favorites',
-            // 'game' => $game,
+            'game' => $game,
         ], 201);
+
     }
 
     /**
@@ -96,9 +88,10 @@ class FavoriteController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request, int $rawgId)
+    // public function destroy(Request $request, int $rawgId)
+    public function destroy(int $rawgId, Request $request)
     {
-        $game = Game::where('rawg_id', $rawgId)->firstOrFail();
+        $game = Game::ofRawgId($rawgId)->firstOrFail();
 
         $request->user()
             ->favoriteGames()
