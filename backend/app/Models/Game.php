@@ -18,7 +18,18 @@ class Game extends Model
             ->withTimestamps();
     }
 
-    public function scopeOfRawgId(Builder $query, int $rawgId) {
+    public function scopeOfRawgId(Builder $query, int $rawgId)
+    {
         return $query->where('rawg_id', $rawgId);
+    }
+
+    public function releaseAlertForUsers()
+    {
+        return $this->belongsToMany(User::class, 'release_alerts')->withTimestamps();
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
     }
 }

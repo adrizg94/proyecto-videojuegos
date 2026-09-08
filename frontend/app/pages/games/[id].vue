@@ -19,7 +19,11 @@
       >
         <!-- Columna izquierda -->
         <div class="flex flex-col gap-2">
-          <GameHero :game="game" :details="details" />
+          <GameHero
+            :game="game"
+            :details="details"
+            :is-authenticated="isAuthenticated"
+          />
           <GameInfo
             :description="englishDescription"
             :details="details"
@@ -37,7 +41,12 @@
             :achievements="details.achievements"
             class="mt-8"
           /> -->
-          <GameSteamReviews v-if="reviews.length" :reviews="reviews" class="mt-8" />
+          <GameUserReviews :game="game"/>
+          <GameSteamReviews
+            v-if="reviews.length"
+            :reviews="reviews"
+            class="mt-8"
+          />
         </div>
         <!-- Columna derecha -->
         <div class="flex flex-col gap-2">
@@ -51,8 +60,11 @@
       </div>
     </div>
   </div>
+  <Toast />
 </template>
 <script setup>
+import GameUserReviews from '~/components/game/users/GameUserReviews.vue';
+
 const route = useRoute();
 
 const { data: game } = await useFetch(`/api/games/${route.params.id}`);
@@ -89,7 +101,9 @@ const steamAppId = computed(() => {
 
 const details = ref(null);
 const players = ref(null);
-const reviews = ref(null);
+const reviews = ref([]);
+
+const { isAuthenticated } = useAuth();
 
 // Solo pedir datos de Steam si el juego está en Steam
 if (steamAppId.value) {
@@ -109,7 +123,7 @@ if (steamAppId.value) {
   const { data: reviewsData } = await useFetch(
     `/api/steam/reviews/${steamAppId.value}`,
     {
-      transform: (data) => data.reviews ?? null,
+      transform: (data) => data.reviews ?? [],
     },
   );
   reviews.value = reviewsData.value;
@@ -117,10 +131,10 @@ if (steamAppId.value) {
 
 const movies = computed(() => details.value.movies?.[0]) ?? null;
 
-const screenshots = computed(() => details.value.screenshots) ?? null;
+const screenshots = computed(() => details.value.screenshots) ?? [];
 
 const englishDescription = computed(() => {
-  return game.value.description_raw?.split("Español")[0].trim() ?? "";
+  return game.value?.description_raw?.split("Español")[0].trim() ?? "";
 });
 
 // Función para recoger trailers de la API de rawg, la API a penas devuelve trailers, buscar otra fuente

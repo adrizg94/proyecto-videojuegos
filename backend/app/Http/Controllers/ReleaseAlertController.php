@@ -10,9 +10,9 @@ class ReleaseAlertController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        return $request->user()->ReleaseAlertGames()->get();
     }
 
     /**
@@ -34,7 +34,7 @@ class ReleaseAlertController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ReleaseAlert $releaseAlert)
+    public function show(Request $request)
     {
         //
     }
@@ -42,7 +42,7 @@ class ReleaseAlertController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ReleaseAlert $releaseAlert)
+    public function edit(Request $request)
     {
         //
     }
@@ -50,7 +50,7 @@ class ReleaseAlertController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ReleaseAlert $releaseAlert)
+    public function update(Request $request)
     {
         //
     }
@@ -58,7 +58,7 @@ class ReleaseAlertController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ReleaseAlert $releaseAlert)
+    public function destroy(Request $request)
     {
         //
     }

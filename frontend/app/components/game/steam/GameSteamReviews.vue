@@ -1,6 +1,6 @@
 <template>
   <section class="flex flex-col gap-2">
-    <h2 class="text-xl text-center">User Reviews</h2>
+    <h2 class="text-xl text-center">Steam Reviews</h2>
     <article
       v-for="review in visibleReviews"
       :key="review.recomendation"

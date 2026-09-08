@@ -3,7 +3,7 @@
 <template>
   <header class="w-full flex justify-end items-center h-15.5 p-2">
     <NuxtLink
-      v-if="!user"
+      v-if="!isAuthenticated"
       to="/login"
       class="px-2 py-1 text-center text-lg font-semibold rounded-lg cursor-pointer hover:bg-hover transition-colors"
     >
@@ -32,5 +32,5 @@
 <script setup>
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
-const { user, logout } = useAuth();
+const { isAuthenticated, user, logout } = useAuth();
 </script>

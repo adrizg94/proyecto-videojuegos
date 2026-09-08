@@ -102,7 +102,7 @@ const login = async () => {
     //   },
     // });
 
-    const response = await apiFetch("/login", {
+    const response = await apiFetch("login", {
       method: "POST",
       body: {
         email: email.value,

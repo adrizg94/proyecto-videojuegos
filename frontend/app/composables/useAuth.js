@@ -1,6 +1,8 @@
 export const useAuth = () => {
   const user = useState("auth-user", () => null);
 
+  const isAuthenticated = computed(() => user.value !== null);
+
   const setUser = (newUser) => {
     user.value = newUser;
   };
@@ -29,7 +31,8 @@ export const useAuth = () => {
   // };
   const fetchUser = async () => {
     try {
-      user.value = await apiFetch("/user");
+      const response = await apiFetch("user");
+      user.value = response.user;
     } catch {
       user.value = null;
     }
@@ -49,7 +52,7 @@ export const useAuth = () => {
   //     },
   //   });
   const logout = async () => {
-    await apiFetch("/logout", {
+    await apiFetch("logout", {
       method: "POST",
     });
 
@@ -64,5 +67,6 @@ export const useAuth = () => {
     clearUser,
     fetchUser,
     logout,
+    isAuthenticated,
   };
 };

@@ -33,6 +33,7 @@ import {
   faPlay,
   faBell,
   faRightFromBracket,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
@@ -79,6 +80,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     faPlay,
     faBell,
     faRightFromBracket,
+    faTrash,
   );
 
   nuxtApp.vueApp.component("FontAwesomeIcon", FontAwesomeIcon);

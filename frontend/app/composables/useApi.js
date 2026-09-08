@@ -27,7 +27,7 @@ export const useApi = () => {
       headers["X-XSRF-TOKEN"] = decodeURIComponent(xsrfToken.value);
     }
 
-    return await $fetch(`${config.public.api}/api${url}`, {
+    return await $fetch(`${config.public.api}/api/${url}`, {
       ...options,
       credentials: "include",
       headers,

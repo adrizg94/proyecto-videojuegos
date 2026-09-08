@@ -1,5 +1,5 @@
 <template>
-  <aside class="bg-surface w-46 p-2">
+  <aside class="bg-surface p-2">
     <nav class="flex flex-col gap-2">
       <NuxtLink to="/" class="flex items-center h-14 justify-center gap-1">
         <img src="/images/branding/logo.png" class="h-13 object-contain pb-1" />

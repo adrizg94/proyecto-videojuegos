@@ -26,12 +26,6 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'User registered successfully',
             'user' => $user,
-
-            // SOLO PARA PROBAR
-            'auth_check' => Auth::check(),
-            'auth_id' => Auth::id(),
-            'request_user_id' => $request->user()?->id,
-            'session_id' => $request->session()->getId(),
         ], 201);
     }
 

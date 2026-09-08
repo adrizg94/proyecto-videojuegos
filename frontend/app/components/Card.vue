@@ -15,18 +15,19 @@
       <button
         type="button"
         title="Add to favorites"
-        @click="toggleFavorite"
+        @click="handleFavorite"
         class="absolute z-10 m-auto w-fit h-fit opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
         :class="showReleaseAlert ? 'inset-y-0 left-28' : 'inset-0'"
       >
         <FontAwesomeIcon
+          v-if="isAuthenticated"
           icon="fa-heart"
           class="text-3xl transition hover:text-primary-light hover:scale-110"
           :class="{ 'text-primary-light': isFavorite }"
         />
       </button>
       <button
-        v-if="showReleaseAlert"
+        v-if="showReleaseAlert && isAuthenticated"
         type="button"
         title="Notify me on release"
         class="absolute inset-y-0 right-28 z-10 m-auto w-fit h-fit opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
@@ -65,7 +66,21 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["addFavorite", "removeFavorite"]);
+// const emit = defineEmits(["addFavorite", "removeFavorite"]);
+
+const { isAuthenticated } = useAuth();
+
+const { toggleFavorite } = useFavorites();
+
+const handleFavorite = () => {
+  toggleFavorite(
+    props.isFavorite,
+    id.value,
+    name.value,
+    props.game?.released,
+    background.value,
+  );
+};
 
 const background = computed(
   () => props.game?.background_image ?? props.entity?.image_background,
@@ -99,19 +114,19 @@ const showReleaseAlert = computed(() => {
   return releaseDate > today;
 });
 
-const toggleFavorite = () => {
-  if (props.isFavorite) {
-    emit("removeFavorite", id.value);
-  } else {
-    emit(
-      "addFavorite",
-      id.value,
-      name.value,
-      props.game?.released,
-      background.value,
-    );
-  }
-};
+// const toggleFavorite = () => {
+//   if (props.isFavorite) {
+//     emit("removeFavorite", id.value);
+//   } else {
+//     emit(
+//       "addFavorite",
+//       id.value,
+//       name.value,
+//       props.game?.released,
+//       background.value,
+//     );
+//   }
+// };
 
 // const isFavorite = computed(() => favoriteIds.value?.includes(props.game?.id));
 

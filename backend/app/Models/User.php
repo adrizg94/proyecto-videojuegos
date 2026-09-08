@@ -35,4 +35,14 @@ class User extends Authenticatable
         return $this->belongsToMany(Game::class, 'favorites')
             ->withTimestamps();
     }
+
+    public function releaseAlertGames()
+    {
+        return $this->belongsToMany(Game::class, 'release_alerts')->withTimestamps();
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }

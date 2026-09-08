@@ -146,7 +146,7 @@ const register = async () => {
     //   },
     // });
 
-    const response = await apiFetch("/register", {
+    const response = await apiFetch("register", {
       method: "POST",
       body: {
         username: username.value,
