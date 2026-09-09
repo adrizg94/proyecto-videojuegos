@@ -21,13 +21,17 @@
           {{ link.name }}
         </NuxtLink>
         <button
+          v-if="isAuthenticated"
           type="button"
+          title="Add to favorites"
+          @click="handleFavorite(link)"
           class="cursor-pointer mr-4"
           aria-label="Add to favorites"
         >
           <FontAwesomeIcon
             icon="fa-heart"
             class="text-2xl transition hover:text-primary-light hover:scale-110"
+            :class="{ 'text-primary-light': favoriteNames.includes(link.name) }"
           />
         </button>
       </li>
@@ -48,7 +52,19 @@
 const props = defineProps({
   name: String,
   links: Array,
+  favoriteNames: {
+    type: Array,
+    default: () => [],
+  },
 });
+
+const { isAuthenticated } = useAuth();
+
+const emit = defineEmits(["toggleFavorite"]);
+
+const handleFavorite = (entity) => {
+  emit("toggleFavorite", entity);
+};
 
 const normalizedLinks = computed(() => {
   return props.links.map((link) => {

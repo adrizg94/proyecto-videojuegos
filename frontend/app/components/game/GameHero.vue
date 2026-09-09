@@ -103,10 +103,6 @@ const props = defineProps({
     type: Object,
     default: null,
   },
-  isAuthenticated: {
-    type: Boolean,
-    default: false,
-  },
 });
 
 const pegiIcons = {
@@ -118,6 +114,8 @@ const pegiIcons = {
 };
 
 const showMyGames = ref(false);
+
+const { isAuthenticated } = useAuth();
 
 const { favoriteIds, toggleFavorite } = useFavorites();
 const { releaseAlertIds, toggleReleaseAlert } = useReleaseAlerts();

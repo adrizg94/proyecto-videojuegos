@@ -18,8 +18,6 @@
         <CreatorCard
           :creator="creator"
           :link="`/creators/${creator.id}`"
-          @add-favorite="addCreator"
-          @remove-favorite="removeCreator"
           @toggle-favorite="handleCreatorFavorite(creator)"
           :is-favorite="isAuthenticated && creatorNames.includes(creator.name)"
         />
@@ -42,8 +40,7 @@ const creatorsCount = ref("");
 
 const { isAuthenticated } = useAuth();
 
-const { creatorNames, addCreator, removeCreator, toggleCreator } =
-  useCreatorFavorites();
+const { creatorNames, toggleCreator } = useCreatorFavorites();
 
 const {
   currentPage,

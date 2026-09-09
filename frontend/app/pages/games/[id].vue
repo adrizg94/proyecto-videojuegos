@@ -21,7 +21,6 @@
           <GameHero
             :game="game"
             :details="details"
-            :is-authenticated="isAuthenticated"
           />
           <GameInfo
             :description="englishDescription"
@@ -92,8 +91,6 @@ const steamAppId = computed(() => {
 const details = ref(null);
 const players = ref(null);
 const reviews = ref([]);
-
-const { isAuthenticated } = useAuth();
 
 // Solo pedir datos de Steam si el juego está en Steam
 if (steamAppId.value) {
