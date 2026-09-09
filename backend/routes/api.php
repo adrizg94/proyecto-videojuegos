@@ -3,6 +3,9 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\GameListController;
+use App\Http\Controllers\GameStatusController;
+use App\Http\Controllers\ReleaseAlertController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\TestFavController;
 use App\Http\Controllers\UserController;
@@ -21,10 +24,23 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::apiResource('favorites', FavoriteController::class);
+    Route::apiResource('release-alerts', ReleaseAlertController::class);
     Route::apiResource('games', GameController::class);
+    Route::apiResource('game-statuses', GameStatusController::class);
+    Route::apiResource('game-lists', GameListController::class);
 
     Route::apiResource('reviews', ReviewController::class)
         ->only(['store', 'update', 'destroy']);
+
+    Route::post(
+        '/game-lists/{gameList}/games',
+        [GameListController::class, 'addGame']
+    );
+
+    Route::delete(
+        '/game-lists/{gameList}/games/{rawgId}',
+        [GameListController::class, 'removeGame']
+    );
 });
 
 // Route::middleware('auth:sanctum')->group(function () {

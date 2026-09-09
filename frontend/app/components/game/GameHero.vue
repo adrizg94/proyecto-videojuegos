@@ -35,29 +35,42 @@
         />
       </button>
       <button
-        v-if="isAuthenticated"
+        v-if="isAuthenticated && showReleaseAlert"
         type="button"
-        @click="handleFavorite"
+        @click="handleReleaseAlert"
         class="cursor-pointer"
       >
         <FontAwesomeIcon
           icon="fa-bell"
           class="text-4xl transition hover:text-primary-light hover:scale-110"
-          :class="{ 'text-primary-light': isAlert }"
+          :class="{ 'text-primary-light': isReleaseAlert }"
           aria-label="Add game to favorites"
         />
       </button>
     </div>
-    <button
-      v-if="isAuthenticated"
-      class="group flex items-center gap-1 w-fit mb-5 text-lg hover:bg-hover px-2 py-1 rounded-lg cursor-pointer transition-colors"
-    >
-      My games
-      <FontAwesomeIcon
-        icon="fa-chevron-down"
-        class="group-hover:text-primary-light transition-colors"
-      />
-    </button>
+    <div v-if="isAuthenticated" class="relative">
+      <button
+        @click="showMyGames = !showMyGames"
+        class="group flex items-center gap-1 w-fit mb-5 text-lg hover:bg-hover px-2 py-1 rounded-lg cursor-pointer transition-colors"
+        :class="{ 'bg-hover hover:bg-surface': showMyGames }"
+      >
+        My games
+        <FontAwesomeIcon
+          :icon="showMyGames ? 'fa-chevron-up' : 'fa-chevron-down'"
+          class="group-hover:text-primary-light transition-colors"
+        />
+      </button>
+      <div
+        v-if="showMyGames"
+        class="absolute left-0 top-10 z-50 mt-2 w-50 rounded-2xl bg-surface p-5 shadow-lg"
+      >
+        <GameStatusUser :game="game" />
+
+        <div class="my-5 w-20 border-t border-text-muted/50" />
+
+        <GameListUser :game="game" @create-list="showCreateList = true" />
+      </div>
+    </div>
     <div v-if="game.ratings_count" class="text-xl flex gap-3 items-center">
       <span class="font-bold"
         ><FontAwesomeIcon icon="fa-star" /> {{ game.rating }}</span
@@ -81,6 +94,8 @@
 
 <script setup>
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import GameStatusUser from "./users/GameStatusUser.vue";
+import GameListUser from "./users/GameListUser.vue";
 
 const props = defineProps({
   game: Object,
@@ -102,7 +117,10 @@ const pegiIcons = {
   18: "/images/pegi/18.svg",
 };
 
+const showMyGames = ref(false);
+
 const { favoriteIds, toggleFavorite } = useFavorites();
+const { releaseAlertIds, toggleReleaseAlert } = useReleaseAlerts();
 
 const handleFavorite = () => {
   toggleFavorite(
@@ -113,8 +131,40 @@ const handleFavorite = () => {
     props.game?.background_image,
   );
 };
-
 const isFavorite = computed(() => favoriteIds.value.includes(props.game?.id));
+
+const handleReleaseAlert = () => {
+  toggleReleaseAlert(
+    isReleaseAlert.value,
+    props.game?.id,
+    props.game?.name,
+    props.game?.released,
+    props.game?.background_image,
+  );
+};
+const isReleaseAlert = computed(() =>
+  releaseAlertIds.value.includes(props.game?.id),
+);
+
+const showReleaseAlert = computed(() => {
+  if (!props.game) return false;
+
+  // Fecha todavía por determinar
+  if (props.game.tba) return true;
+
+  // No tenemos fecha de lanzamiento
+  if (!props.game.released) return true;
+
+  const [year, month, day] = props.game.released.split("-").map(Number);
+
+  const releaseDate = new Date(year, month - 1, day);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Campana solamente si todavía no ha salido
+  return releaseDate > today;
+});
 
 const ratingValue = computed(() => {
   if (props.game.rating >= 4.5) return "Exceptional";

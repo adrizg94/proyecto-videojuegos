@@ -54,6 +54,14 @@
           >
             {{ review.user.username }}
           </div>
+          <span>
+            <FontAwesomeIcon
+              v-for="star in 5"
+              icon="fa-star"
+              class="text-xl transition-colors"
+              :class="{ 'text-yellow-400': star <= review.rating }"
+            />
+          </span>
         </div>
         <div class="flex text-xs text-text-muted/70 justify-center gap-1.5">
           <span>{{
@@ -65,9 +73,10 @@
           }}</span>
         </div>
         <div class="flex flex-col items-center gap-2">
-          <span class="w-full wrap-break-word text-left text-sm leading-relaxed text-text-muted">{{
-            visibleReview(review.review)
-          }}</span>
+          <span
+            class="w-full wrap-break-word text-left text-sm leading-relaxed text-text-muted"
+            >{{ visibleReview(review.review) }}</span
+          >
           <button
             v-if="review.review.length > maxCharReview"
             type="button"
@@ -76,17 +85,18 @@
           >
             {{ showFullReview ? "Show less" : "Show more" }}
           </button>
-          <div class="w-full flex justify-end">
+          <div
+            v-if="index === 0 && isReviewPublished"
+            class="w-full flex justify-end"
+          >
             <button
-              v-if="index === 0"
               type="button"
               class="w-fit mx-2 font-semibold text-md px-2.5 py-1.5 my-2 rounded-lg hover:cursor-pointer bg-primary-light hover:bg-primary transition-colors"
-              @click="editReview = true"
+              @click="startEditReview"
             >
               Edit review
             </button>
             <button
-              v-if="index === 0"
               type="button"
               title="Delete review"
               class="w-fit mx-2 font-semibold text-md px-2.5 py-1.5 my-2 rounded-lg hover:cursor-pointer bg-red-700 hover:bg-red-800 transition-colors"
@@ -121,13 +131,11 @@ const review = ref("");
 const showAllReviews = ref(false);
 const showFullReview = ref(false);
 
-const userReview = ref(null);
 const editReview = ref(false);
 
 const { apiFetch } = useApi();
 const { showToast } = useToast();
-const { isAuthenticated } = useAuth();
-const { user } = useAuth();
+const { user, isAuthenticated } = useAuth();
 
 const { data: reviews, refresh: refreshReviews } = await useAsyncData(
   `reviews-${props.game.id}`,
@@ -190,34 +198,29 @@ const deleteReview = async () => {
   }
 };
 
-//Mostramos como primera review la del usuario
-const sortedReviews = computed(() => {
-  if (!user.value) {
-    return reviews.value;
-  }
+const userReview = computed(() => {
+  if (!user.value) return null;
 
-  const ownReview = reviews.value.find(
-    (review) => review.user.id === user.value.id,
+  return (
+    reviews.value.find((review) => review.user?.id === user.value.id) ?? null
   );
+});
 
-  if (!ownReview) {
+const sortedReviews = computed(() => {
+  if (!userReview.value) {
     return reviews.value;
   }
-
-  userReview.value = ownReview;
-  review.value = ownReview.review;
-  rating.value = ownReview.rating;
 
   const otherReviews = reviews.value.filter(
-    (review) => review.id !== ownReview.id,
+    (review) => review.id !== userReview.value.id,
   );
 
-  return [ownReview, ...otherReviews];
+  return [userReview.value, ...otherReviews];
 });
 
 //Comprobamos si el usuario tiene review publicada
 const isReviewPublished = computed(() => {
-  return reviews.value.some((review) => review.user.id === user.value.id);
+  return userReview.value !== null;
 });
 
 const visibleReviews = computed(() =>
@@ -225,6 +228,15 @@ const visibleReviews = computed(() =>
     ? sortedReviews.value
     : sortedReviews.value.slice(0, maxReviews),
 );
+
+const startEditReview = () => {
+  if (!userReview.value) return;
+
+  review.value = userReview.value.review;
+  rating.value = userReview.value.rating;
+
+  editReview.value = true;
+};
 
 const visibleReview = (review) => {
   return review.length < maxCharReview || showFullReview.value

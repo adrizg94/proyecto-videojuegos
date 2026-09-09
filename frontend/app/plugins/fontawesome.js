@@ -9,6 +9,7 @@ import {
   faChevronLeft,
   faChevronRight,
   faChevronDown,
+  faChevronUp,
   faFilterCircleXmark,
   faRankingStar,
   faGamepad,
@@ -34,6 +35,7 @@ import {
   faBell,
   faRightFromBracket,
   faTrash,
+  faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
@@ -52,6 +54,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     faChevronLeft,
     faChevronRight,
     faChevronDown,
+    faChevronUp,
     faFilterCircleXmark,
     faRankingStar,
     faWindows,
@@ -81,6 +84,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     faBell,
     faRightFromBracket,
     faTrash,
+    faCheck,
   );
 
   nuxtApp.vueApp.component("FontAwesomeIcon", FontAwesomeIcon);

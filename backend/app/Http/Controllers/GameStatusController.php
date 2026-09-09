@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreReviewRequest;
-use App\Http\Requests\UpdateReviewRequest;
+use App\Http\Requests\StoreGameStatusRequest;
 use App\Models\Game;
-use App\Models\Review;
+use App\Models\GameStatus;
 use Illuminate\Http\Request;
 
-class ReviewController extends Controller
+class GameStatusController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -22,13 +21,13 @@ class ReviewController extends Controller
         $game = Game::ofRawgId($data['rawg_id'])->first();
 
         if (! $game) {
-            return response()->json([]);
+            return response()->json(null);
         }
 
-        return $game->reviews()
-            ->with('user:id,username')
-            ->latest()
-            ->get();
+        return $game->gameStatuses()
+            ->where('user_id', $request->user()->id)
+            ->first();
+
     }
 
     /**
@@ -42,7 +41,7 @@ class ReviewController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreReviewRequest $request)
+    public function store(StoreGameStatusRequest $request)
     {
         $data = $request->validated();
 
@@ -59,32 +58,34 @@ class ReviewController extends Controller
         );
 
         // El user_id se asigna automáticamente mediante las relaciones
-        $review = $request->user()
-            ->reviews()
-            ->create([
+        $gameStatus = GameStatus::updateOrCreate(
+            [
+                'user_id' => $request->user()->id,
                 'game_id' => $game->id,
-                'rating' => $data['rating'],
-                'review' => $data['review'],
-            ]);
+            ],
+            [
+                'status' => $data['status'],
+            ]
+        );
 
         return response()->json([
-            'message' => 'Review created successfully',
-            'review' => $review,
+            'message' => 'Status saved successfully',
+            'game_status' => $gameStatus,
         ], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Review $review)
+    public function show(GameStatus $gameStatus)
     {
-        return $review;
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Review $review)
+    public function edit(GameStatus $gameStatus)
     {
         //
     }
@@ -92,35 +93,25 @@ class ReviewController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateReviewRequest $request, Review $review)
+    public function update(StoreGameStatusRequest $request, GameStatus $gameStatus)
     {
-        // Controlamos que un usuario no pueda editar las reviews de otro usuario
-        if ($review->user_id !== $request->user()->id) {
-            abort(403);
-        }
-
-        $review->update($request->validated());
-
-        return response()->json([
-            'message' => 'Review updated successfully',
-            'review' => $review,
-        ], 200);
+        //
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request, Review $review)
+    public function destroy(Request $request, GameStatus $gameStatus)
     {
-        // Controlamos que un usuario no pueda editar las reviews de otro usuario
-        if ($review->user_id !== $request->user()->id) {
+        // Comprobamos que el status pertenece al usuario autenticado
+        if ($gameStatus->user_id !== $request->user()->id) {
             abort(403);
         }
 
-        $review->delete();
+        $gameStatus->delete();
 
         return response()->json([
-            'message' => 'Review deleted successfully',
+            'message' => 'Status deleted successfully',
         ]);
     }
 }

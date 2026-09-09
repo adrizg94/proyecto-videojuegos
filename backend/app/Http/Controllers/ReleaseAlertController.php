@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ReleaseAlert;
+use App\Http\Requests\StoreGameRequest;
+use App\Models\Game;
 use Illuminate\Http\Request;
 
 class ReleaseAlertController extends Controller
@@ -26,9 +27,30 @@ class ReleaseAlertController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreGameRequest $request)
     {
-        //
+        $data = $request->validated();
+
+        $game = Game::updateOrCreate(
+            [
+                'rawg_id' => $data['rawg_id'],
+            ],
+            [
+                'name' => $data['name'],
+                'image' => $data['image'] ?? null,
+                'release_date' => $data['release_date'] ?? null,
+            ]
+        );
+
+        $request->user()
+            ->releaseAlertGames()
+            ->syncWithoutDetaching([$game->id]);
+
+        return response()->json([
+            'message' => 'Alert added succesfully',
+            'game' => $game,
+        ], 201);
+
     }
 
     /**
@@ -58,8 +80,16 @@ class ReleaseAlertController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request)
+    public function destroy(int $rawgId, Request $request)
     {
-        //
+        $game = Game::ofRawgId($rawgId)->firstOrFail();
+
+        $request->user()
+            ->releaseAlertGames()
+            ->detach($game->id);
+
+        return response()->json([
+            'message' => 'Alert removed succesfully',
+        ]);
     }
 }
