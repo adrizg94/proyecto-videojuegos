@@ -51,7 +51,23 @@ class User extends Authenticatable
         return $this->hasMany(GameStatus::class);
     }
 
-    public function gameLists() {
+    public function gameLists()
+    {
         return $this->hasMany(GameList::class);
+    }
+
+    public function publishers()
+    {
+        return $this->belongsToMany(Publisher::class, 'user_publishers');
+    }
+
+    public function developers()
+    {
+        return $this->belongsToMany(Developer::class, 'user_developers');
+    }
+
+    public function creators()
+    {
+        return $this->belongsToMany(Creator::class, 'user_creators');
     }
 }

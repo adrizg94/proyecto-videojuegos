@@ -23,6 +23,12 @@
         <Card
           :entity="developer"
           :link="`/developers/${developer.id}`"
+          @add-favorite="addDeveloper"
+          @remove-favorite="removeDeveloper"
+          @toggle-favorite="handleDeveloperFavorite(developer)"
+          :is-favorite="
+            isAuthenticated && developerNames.includes(developer.name)
+          "
         />
       </div>
     </div>
@@ -32,11 +38,19 @@
       :total-pages="totalPages"
       @change-page="changePage"
     />
+    <Toast />
   </div>
 </template>
 
 <script setup>
+import { useDeveloperFavorites } from "~/composables/entities/useDevelopersFavorites";
+
 const developersCount = ref("");
+
+const { isAuthenticated } = useAuth();
+
+const { developerNames, addDeveloper, removeDeveloper, toggleDeveloper } =
+  useDeveloperFavorites();
 
 const {
   currentPage,
@@ -58,6 +72,14 @@ const { data, status } = await useFetch("/api/developers", {
 });
 
 const developers = computed(() => data.value.results ?? []);
+
+const handleDeveloperFavorite = (developer) => {
+  toggleDeveloper(
+    developerNames.value.includes(developer.name),
+    developer.name,
+    developer.image_background,
+  );
+};
 
 watchEffect(() => {
   developersCount.value = data.value?.count ?? 0;

@@ -15,7 +15,14 @@
         :key="creator.id"
         class="flex justify-center py-4"
       >
-        <CreatorCard :creator="creator" :link="`/creators/${creator.id}`" />
+        <CreatorCard
+          :creator="creator"
+          :link="`/creators/${creator.id}`"
+          @add-favorite="addCreator"
+          @remove-favorite="removeCreator"
+          @toggle-favorite="handleCreatorFavorite(creator)"
+          :is-favorite="isAuthenticated && creatorNames.includes(creator.name)"
+        />
       </div>
     </div>
     <Pagination
@@ -24,11 +31,19 @@
       :total-pages="totalPages"
       @change-page="changePage"
     />
+    <Toast />
   </div>
 </template>
 
 <script setup>
+import { useCreatorFavorites } from "~/composables/entities/useCreatorsFavorites";
+
 const creatorsCount = ref("");
+
+const { isAuthenticated } = useAuth();
+
+const { creatorNames, addCreator, removeCreator, toggleCreator } =
+  useCreatorFavorites();
 
 const {
   currentPage,
@@ -50,6 +65,14 @@ const { data, status } = await useFetch("/api/creators", {
 });
 
 const creators = computed(() => data.value.results ?? []);
+
+const handleCreatorFavorite = (creator) => {
+  toggleCreator(
+    creatorNames.value.includes(creator.name),
+    creator.name,
+    creator.image_background,
+  );
+};
 
 watchEffect(() => {
   creatorsCount.value = data.value?.count ?? 0;

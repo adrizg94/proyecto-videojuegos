@@ -13,6 +13,7 @@
       </NuxtLink>
 
       <button
+        v-if="isAuthenticated"
         type="button"
         title="Add to favorites"
         @click="handleFavorite"
@@ -66,20 +67,12 @@ const props = defineProps({
   },
 });
 
-// const emit = defineEmits(["addFavorite", "removeFavorite"]);
+const emit = defineEmits(["toggleFavorite"]);
 
 const { isAuthenticated } = useAuth();
 
-const { toggleFavorite } = useFavorites();
-
 const handleFavorite = () => {
-  toggleFavorite(
-    props.isFavorite,
-    id.value,
-    name.value,
-    props.game?.released,
-    background.value,
-  );
+  emit("toggleFavorite", props.game ?? props.entity);
 };
 
 const background = computed(
@@ -94,7 +87,7 @@ const id = computed(() => props.game?.id ?? props.entity?.id);
 const name = computed(() => props.game?.name ?? props.entity?.name);
 
 const showReleaseAlert = computed(() => {
-  // Si es Publisher/Developer/etc., nunca hay campana
+  // Si es Publisher o Developer no hay campana
   if (!props.game) return false;
 
   // Fecha todavía por determinar
@@ -113,58 +106,4 @@ const showReleaseAlert = computed(() => {
   // Campana solamente si todavía no ha salido
   return releaseDate > today;
 });
-
-// const toggleFavorite = () => {
-//   if (props.isFavorite) {
-//     emit("removeFavorite", id.value);
-//   } else {
-//     emit(
-//       "addFavorite",
-//       id.value,
-//       name.value,
-//       props.game?.released,
-//       background.value,
-//     );
-//   }
-// };
-
-// const isFavorite = computed(() => favoriteIds.value?.includes(props.game?.id));
-
-// const findFavorie = computed((gameId) => isFavorite.value.find(gameId));
-// const actionFavorite = (gameId) => {
-//   if (findFavorie(id)) {
-//     return emit("removeFavorite", gameId);
-//   } else {
-//     return emit("addFavorite", id, name, background);
-//   }
-// };
-
-// if (props.game) {
-//   const release = computed(() => props.game.released);
-//   const [year, month, day] = release.value.split("-").map(Number);
-//   const releaseDate = new Date(year, month - 1, day);
-//   const today = new Date();
-//   today.setHours(0, 0, 0, 0);
-//   const isReleased = releaseDate <= today;
-// }
 </script>
-
-<!-- Template antiguo sin botón de favorito -->
-<!-- <template>
-  <NuxtLink :to="link" class="block">
-    <article
-      class="flex flex-col bg-surface cursor-pointer rounded-lg h-68 w-78 transition duration-200 hover:bg-hover hover:scale-105 hover:shadow-xl"
-    >
-      <img
-        :src="publisher.image ?? 'https://placehold.co/600x400?text=Image+Not+Found'"
-        :alt="publisher.name"
-        class="h-48 object-cover rounded-t-lg w-full"
-      />
-      <h2
-        class="flex flex-1 justify-center items-center font-bold text-white text-center"
-      >
-        {{ publisher.name }}
-      </h2>
-    </article>
-  </NuxtLink>
-</template> -->

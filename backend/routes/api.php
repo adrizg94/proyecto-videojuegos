@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CreatorController;
+use App\Http\Controllers\DeveloperController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\GameListController;
 use App\Http\Controllers\GameStatusController;
+use App\Http\Controllers\PublisherController;
 use App\Http\Controllers\ReleaseAlertController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\TestFavController;
@@ -28,6 +31,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('games', GameController::class);
     Route::apiResource('game-statuses', GameStatusController::class);
     Route::apiResource('game-lists', GameListController::class);
+    Route::apiResource('publishers', PublisherController::class);
+    Route::apiResource('developers', DeveloperController::class);
+    Route::apiResource('creators', CreatorController::class);
 
     Route::apiResource('reviews', ReviewController::class)
         ->only(['store', 'update', 'destroy']);

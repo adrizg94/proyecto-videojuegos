@@ -20,7 +20,16 @@
             :name="publisher.name"
             :link="`/publishers/${publisher.id}`"
           /> -->
-        <Card :entity="publisher" :link="`/publishers/${publisher.id}`" />
+        <Card
+          :entity="publisher"
+          :link="`/publishers/${publisher.id}`"
+          @add-favorite="addPublisher"
+          @remove-favorite="removePublisher"
+          @toggle-favorite="handlePublisherFavorite(publisher)"
+          :is-favorite="
+            isAuthenticated && publisherNames.includes(publisher.name)
+          "
+        />
       </div>
     </div>
     <Pagination
@@ -29,11 +38,20 @@
       :total-pages="totalPages"
       @change-page="changePage"
     />
+    <Toast />
   </div>
 </template>
 
 <script setup>
+import { usePublisherFavorites } from '~/composables/entities/usePublishersFavorites';
+
+
 const publishersCount = ref("");
+
+// const { apiFetch } = useApi();
+const { isAuthenticated } = useAuth();
+const { publisherNames, addPublisher, removePublisher, togglePublisher } =
+  usePublisherFavorites();
 
 const {
   currentPage,
@@ -53,6 +71,27 @@ const { data, status } = await useFetch("/api/publishers", {
     search_precise: true,
   },
 });
+
+// const { data: favoritePublisherIds } = await useAsyncData(
+//   "favorite-publisher-ids",
+//   async () => {
+//     const data = await apiFetch("publishers");
+
+//     return data.map((publisher) => publisher.rawg_id);
+//   },
+//   {
+//     server: false,
+//     default: () => [],
+//   },
+// );
+
+const handlePublisherFavorite = (publisher) => {
+  togglePublisher(
+    publisherNames.value.includes(publisher.name),
+    publisher.name,
+    publisher.image_background,
+  );
+};
 
 const publishers = computed(() => data.value.results ?? []);
 
