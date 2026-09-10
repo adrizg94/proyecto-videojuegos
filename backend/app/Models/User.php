@@ -70,4 +70,15 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Creator::class, 'user_creators');
     }
+
+    public function threads()
+    {
+        return $this->belongsToMany(Thread::class);
+    }
+    
+    public function posts()
+    {
+        return $this->belongsToMany(Post::class);
+    }
+
 }

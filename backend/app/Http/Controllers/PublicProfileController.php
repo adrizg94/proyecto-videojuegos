@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\GameList;
 use App\Models\User;
 
 class PublicProfileController extends Controller
@@ -45,6 +46,25 @@ class PublicProfileController extends Controller
                 ->with('game')
                 ->latest()
                 ->get(),
+        ]);
+    }
+
+    public function showList(string $username, GameList $gameList)
+    {
+        $user = User::where('username', $username)->firstOrFail();
+
+        if ($gameList->user_id !== $user->id) {
+            abort(404);
+        }
+
+        $gameList->load('games');
+
+        return response()->json([
+            'user' => [
+                'id' => $user->id,
+                'username' => $user->username,
+            ],
+            'list' => $gameList,
         ]);
     }
 }

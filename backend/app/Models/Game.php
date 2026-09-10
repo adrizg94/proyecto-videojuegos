@@ -33,11 +33,18 @@ class Game extends Model
         return $this->hasMany(Review::class);
     }
 
-    public function gameStatuses() {
-        return $this->hasMany(GameStatus:: class);
+    public function gameStatuses()
+    {
+        return $this->hasMany(GameStatus::class);
     }
 
-    public function gameLists() {
+    public function gameLists()
+    {
         require $this->belongsToMany(GameList::class, 'game_list_games')->withTimestamps();
+    }
+
+    public function threads()
+    {
+        require $this->belongsToMany(Thread::class);
     }
 }
