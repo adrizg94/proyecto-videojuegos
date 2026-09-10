@@ -48,10 +48,12 @@
           <Card
             :game="game"
             :link="`/games/${game.id}`"
-            @add-favorite="addFavorite"
-            @remove-favorite="removeFavorite"
             @toggle-favorite="handleFavorite(game)"
             :is-favorite="isAuthenticated && favoriteIds?.includes(game.id)"
+            @toggle-release-alert="handleReleaseAlert(game)"
+            :is-release-alert="
+              isAuthenticated && releaseAlertIds?.includes(game.id)
+            "
           />
         </div>
       </div>
@@ -83,7 +85,7 @@ import { useReleaseTimeline } from "~/composables/useReleaseTimeline";
 
 const pageSize = 8;
 const gamesCount = ref(0);
-const config = useRuntimeConfig();
+// const config = useRuntimeConfig();
 
 const { currentPage, totalPages, changePage } = useCatalog(gamesCount);
 
@@ -143,14 +145,24 @@ const { data, status } = await useFetch("/api/games", {
 });
 
 const { isAuthenticated } = useAuth();
-const { favoriteIds, addFavorite, removeFavorite, toggleFavorite } =
-  useFavorites();
+const { favoriteIds, toggleFavorite } = useFavorites();
+const { releaseAlertIds, toggleReleaseAlert } = useReleaseAlerts();
 
 const games = computed(() => data.value.results);
 
 const handleFavorite = (game) => {
   toggleFavorite(
     favoriteIds.value.includes(game.id),
+    game.id,
+    game.name,
+    game.released,
+    game.background_image,
+  );
+};
+
+const handleReleaseAlert = (game) => {
+  toggleReleaseAlert(
+    releaseAlertIds.value.includes(game.id),
     game.id,
     game.name,
     game.released,

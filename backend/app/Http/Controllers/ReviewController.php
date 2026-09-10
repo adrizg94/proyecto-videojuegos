@@ -54,7 +54,7 @@ class ReviewController extends Controller
             [
                 'name' => $data['name'],
                 'release_date' => $data['release_date'] ?? null,
-                'image' => $data['image'] ?? null,
+                'image' => $data['image'] ?? '/images/no-game.svg',
             ]
         );
 

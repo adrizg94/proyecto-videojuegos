@@ -88,6 +88,7 @@ const { data, status } = await useFetch("/api/publishers", {
 const handlePublisherFavorite = (publisher) => {
   togglePublisher(
     publisherNames.value.includes(publisher.name),
+    publisher.id,
     publisher.name,
     publisher.image_background,
   );

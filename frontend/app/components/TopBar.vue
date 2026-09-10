@@ -7,30 +7,37 @@
       to="/login"
       class="px-2 py-1 text-center text-lg font-semibold rounded-lg cursor-pointer hover:bg-hover transition-colors"
     >
-      <font-awesome-icon icon="fa-user" />
+      <FontAwesomeIcon icon="fa-user" />
       Login
     </NuxtLink>
-    <div v-else class="flex">
-      <NuxtLink
-        to="/profile"
+    <div v-else class="relative flex">
+      <button
+        type="button"
+        @click="showOptions = !showOptions"
         class="px-2 py-1 text-center text-lg font-semibold rounded-lg cursor-pointer hover:bg-hover transition-colors"
       >
-        <font-awesome-icon icon="fa-user" />
+        <FontAwesomeIcon icon="fa-user" />
         {{ user.username }}
-      </NuxtLink>
 
-      <button
-        @click="logout"
-        class="flex items-center p-1 hover:cursor-pointer hover:text-primary-light transition-colors"
-      >
-        <FontAwesomeIcon icon="fa-right-from-bracket" class="text-xl" />
+        <FontAwesomeIcon
+          :icon="showOptions ? 'fa-chevron-up' : 'fa-chevron-down'"
+        />
       </button>
+      <UserMenu
+        v-if="showOptions"
+        :show-options="showOptions"
+        @close="showOptions = false"
+        class="absolute right-0 top-12 z-50 mt-2 w-40 rounded-xl bg-surface p-2 shadow-xl"
+      />
     </div>
   </header>
 </template>
 
 <script setup>
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import UserMenu from "./users/UserMenu.vue";
+
+const showOptions = ref(false);
 
 const { isAuthenticated, user, logout } = useAuth();
 </script>

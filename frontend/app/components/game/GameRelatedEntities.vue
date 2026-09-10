@@ -22,9 +22,9 @@
 </template>
 
 <script setup>
-import { useCreatorFavorites } from '~/composables/entities/useCreatorsFavorites';
-import { useDeveloperFavorites } from '~/composables/entities/useDevelopersFavorites';
-import { usePublisherFavorites } from '~/composables/entities/usePublishersFavorites';
+import { useCreatorFavorites } from "~/composables/entities/useCreatorsFavorites";
+import { useDeveloperFavorites } from "~/composables/entities/useDevelopersFavorites";
+import { usePublisherFavorites } from "~/composables/entities/usePublishersFavorites";
 
 const propts = defineProps({
   game: Object,
@@ -40,6 +40,7 @@ const { creatorNames, toggleCreator } = useCreatorFavorites();
 const handleDeveloperFavorite = (developer) => {
   toggleDeveloper(
     developerNames.value.includes(developer.name),
+    developer.id,
     developer.name,
     developer.image_background,
   );
@@ -48,6 +49,7 @@ const handleDeveloperFavorite = (developer) => {
 const handlePublisherFavorite = (publisher) => {
   togglePublisher(
     publisherNames.value.includes(publisher.name),
+    publisher.id,
     publisher.name,
     publisher.image_background,
   );
@@ -56,8 +58,9 @@ const handlePublisherFavorite = (publisher) => {
 const handleCreatorFavorite = (creator) => {
   toggleCreator(
     creatorNames.value.includes(creator.name),
+    creator.id,
     creator.name,
-    creator.image_background,
+    creator.image,
   );
 };
 </script>

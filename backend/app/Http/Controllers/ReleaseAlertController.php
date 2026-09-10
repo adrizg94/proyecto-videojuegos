@@ -37,7 +37,7 @@ class ReleaseAlertController extends Controller
             ],
             [
                 'name' => $data['name'],
-                'image' => $data['image'] ?? null,
+                'image' => $data['image'] ?? '/images/no-game.svg',
                 'release_date' => $data['release_date'] ?? null,
             ]
         );

@@ -49,10 +49,12 @@
         <Card
           :game="game"
           :link="`/games/${game.id}`"
-          @add-favorite="addFavorite"
-          @remove-favorite="removeFavorite"
           @toggle-favorite="handleFavorite(game)"
           :is-favorite="isAuthenticated && favoriteIds?.includes(game.id)"
+          @toggle-release-alert="handleReleaseAlert(game)"
+          :is-release-alert="
+            isAuthenticated && releaseAlertIds?.includes(game.id)
+          "
         />
       </div>
     </div>
@@ -71,8 +73,8 @@
 const route = useRoute();
 const router = useRouter();
 const gamesCount = ref(0);
-const { favoriteIds, addFavorite, removeFavorite, toggleFavorite } =
-  useFavorites();
+const { favoriteIds, toggleFavorite } = useFavorites();
+const { releaseAlertIds, toggleReleaseAlert } = useReleaseAlerts();
 const { isAuthenticated } = useAuth();
 
 // Función que recoge las querys de la url para buscar por filtros
@@ -157,6 +159,16 @@ const games = computed(() => data.value?.results ?? []);
 const handleFavorite = (game) => {
   toggleFavorite(
     favoriteIds.value.includes(game.id),
+    game.id,
+    game.name,
+    game.released,
+    game.background_image,
+  );
+};
+
+const handleReleaseAlert = (game) => {
+  toggleReleaseAlert(
+    releaseAlertIds.value.includes(game.id),
     game.id,
     game.name,
     game.released,

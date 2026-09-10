@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('publishers', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('rawg_id')->unique();
             $table->string('name');
             $table->string('image');
             $table->timestamps();

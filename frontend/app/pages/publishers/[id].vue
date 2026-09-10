@@ -32,6 +32,7 @@ const { publisherNames, togglePublisher } = usePublisherFavorites();
 const handlePublisherFavorite = (publisher) => {
   togglePublisher(
     publisherNames.value.includes(publisher.name),
+    publisher.id,
     publisher.name,
     publisher.image_background,
   );

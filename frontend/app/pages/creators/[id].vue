@@ -30,8 +30,9 @@ const { creatorNames, toggleCreator } = useCreatorFavorites();
 const handleCreatorFavorite = (creator) => {
   toggleCreator(
     creatorNames.value.includes(creator.name),
+    creator.id,
     creator.name,
-    creator.image_background,
+    creator.image,
   );
 };
 

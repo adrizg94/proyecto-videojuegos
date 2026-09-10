@@ -13,7 +13,7 @@
       </NuxtLink>
 
       <button
-        v-if="isAuthenticated"
+        v-if="isAuthenticated && showActions"
         type="button"
         title="Add to favorites"
         @click="handleFavorite"
@@ -21,21 +21,22 @@
         :class="showReleaseAlert ? 'inset-y-0 left-28' : 'inset-0'"
       >
         <FontAwesomeIcon
-          v-if="isAuthenticated"
           icon="fa-heart"
           class="text-3xl transition hover:text-primary-light hover:scale-110"
           :class="{ 'text-primary-light': isFavorite }"
         />
       </button>
       <button
-        v-if="showReleaseAlert && isAuthenticated"
+        v-if="showReleaseAlert && isAuthenticated && showActions"
         type="button"
+        @click="handleReleaseAlert"
         title="Notify me on release"
         class="absolute inset-y-0 right-28 z-10 m-auto w-fit h-fit opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
       >
         <FontAwesomeIcon
           icon="fa-bell"
           class="text-3xl transition hover:text-primary-light hover:scale-110"
+          :class="{ 'text-primary-light': isReleaseAlert }"
         />
       </button>
     </div>
@@ -65,14 +66,26 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  isReleaseAlert: {
+    type: Boolean,
+    default: false,
+  },
+  showActions: {
+    type: Boolean,
+    default: true,
+  },
 });
 
-const emit = defineEmits(["toggleFavorite"]);
+const emit = defineEmits(["toggleFavorite", "toggleReleaseAlert"]);
 
 const { isAuthenticated } = useAuth();
 
 const handleFavorite = () => {
   emit("toggleFavorite", props.game ?? props.entity);
+};
+
+const handleReleaseAlert = () => {
+  emit("toggleReleaseAlert", props.game ?? props.entity);
 };
 
 const background = computed(

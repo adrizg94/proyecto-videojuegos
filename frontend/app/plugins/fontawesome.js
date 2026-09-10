@@ -36,6 +36,7 @@ import {
   faRightFromBracket,
   faTrash,
   faCheck,
+  faCog,
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
@@ -85,6 +86,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     faRightFromBracket,
     faTrash,
     faCheck,
+    faCog,
   );
 
   nuxtApp.vueApp.component("FontAwesomeIcon", FontAwesomeIcon);

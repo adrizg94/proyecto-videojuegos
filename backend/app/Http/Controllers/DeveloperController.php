@@ -33,11 +33,11 @@ class DeveloperController extends Controller
 
         $developer = Developer::updateOrCreate(
             [
-                'name' => $data['name'],
+                'rawg_id' => $data['rawg_id'],
             ],
             [
                 'name' => $data['name'],
-                'image' => $data['image'] ?? null,
+                'image' => $data['image'] ?? '/images/no-company.svg',
             ],
         );
 

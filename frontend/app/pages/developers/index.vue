@@ -76,6 +76,7 @@ const developers = computed(() => data.value.results ?? []);
 const handleDeveloperFavorite = (developer) => {
   toggleDeveloper(
     developerNames.value.includes(developer.name),
+    developer.id,
     developer.name,
     developer.image_background,
   );

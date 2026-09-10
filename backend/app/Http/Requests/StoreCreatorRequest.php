@@ -23,6 +23,7 @@ class StoreCreatorRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'rawg_id' => ['required', 'integer'],
             'name' => ['required', 'string'],
             'image' => ['nullable', 'string'],
         ];

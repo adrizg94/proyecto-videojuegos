@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Developer extends Model
 {
-    protected $fillable = ['name', 'image'];
+    protected $fillable = ['rawg_id', 'name', 'image'];
 
     public function users()
     {

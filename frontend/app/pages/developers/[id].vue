@@ -32,6 +32,7 @@ const { developerNames, toggleDeveloper } = useDeveloperFavorites();
 const handleDeveloperFavorite = (developer) => {
   toggleDeveloper(
     developerNames.value.includes(developer.name),
+    developer.id,
     developer.name,
     developer.image_background,
   );

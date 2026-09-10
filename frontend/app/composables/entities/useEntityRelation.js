@@ -21,11 +21,12 @@ export const useEntityRelation = (key, endpoint) => {
     },
   );
 
-  const add = async (name, image) => {
+  const add = async (rawgId, name, image) => {
     try {
       const response = await apiFetch(endpoint, {
         method: "POST",
         body: {
+          rawg_id: rawgId,
           name,
           image: image ?? null,
         },
@@ -70,11 +71,11 @@ export const useEntityRelation = (key, endpoint) => {
     }
   };
 
-  const toggle = async (isActive, name, image) => {
+  const toggle = async (isActive, rawgId, name, image) => {
     if (isActive) {
       await remove(name);
     } else {
-      await add(name, image);
+      await add(rawgId, name, image);
     }
   };
 
