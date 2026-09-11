@@ -5,6 +5,7 @@ use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\CreatorController;
 use App\Http\Controllers\DeveloperController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\GameController;
 use App\Http\Controllers\GameListController;
 use App\Http\Controllers\GameStatusController;
 use App\Http\Controllers\PostController;
@@ -18,6 +19,8 @@ use App\Http\Controllers\UserController;
 // use Illuminate\Http\Request;
 // use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/games', [GameController::class, 'index']);
 
 /*
 |--------------------------------------------------------------------------
