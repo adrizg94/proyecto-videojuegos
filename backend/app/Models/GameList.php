@@ -19,7 +19,7 @@ class GameList extends Model
         return $this->belongsToMany(Game::class, 'game_list_games')->withTimestamps();
     }
 
-    public function scopeOfTitle(Builder $query, int $title)
+    public function scopeOfTitle(Builder $query, string $title): Builder
     {
         return $query->where('title', $title);
     }

@@ -49,17 +49,27 @@
       </button>
     </div>
     <div v-if="isAuthenticated" class="relative">
-      <button
-        @click="showMyGames = !showMyGames"
-        class="group flex items-center gap-1 w-fit mb-5 text-lg hover:bg-hover px-2 py-1 rounded-lg cursor-pointer transition-colors"
-        :class="{ 'bg-hover hover:bg-surface': showMyGames }"
-      >
-        My games
-        <FontAwesomeIcon
-          :icon="showMyGames ? 'fa-chevron-up' : 'fa-chevron-down'"
-          class="group-hover:text-primary-light transition-colors"
-        />
-      </button>
+      <div class="flex items-center gap-2">
+        <button
+          @click="showMyGames = !showMyGames"
+          class="group flex items-center gap-1 w-fit text-lg hover:bg-hover px-2 py-1 rounded-lg cursor-pointer transition-colors"
+          :class="{ 'bg-hover hover:bg-surface': showMyGames }"
+        >
+          My games
+          <FontAwesomeIcon
+            :icon="showMyGames ? 'fa-chevron-up' : 'fa-chevron-down'"
+            class="group-hover:text-primary-light transition-colors"
+          />
+        </button>
+        <NuxtLink
+          :to="`/community/games/${game.id}`"
+          class="inline-flex items-center gap-2 rounded-lg bg-surface px-4 py-2 text-sm font-medium text-text-muted transition-colors hover:bg-hover hover:text-white"
+        >
+          <FontAwesomeIcon icon="fa-comments" />
+
+          Discussions
+        </NuxtLink>
+      </div>
       <div
         v-if="showMyGames"
         class="absolute left-0 top-10 z-50 mt-2 w-50 rounded-2xl bg-surface p-5 shadow-lg"

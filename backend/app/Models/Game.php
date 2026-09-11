@@ -18,7 +18,7 @@ class Game extends Model
             ->withTimestamps();
     }
 
-    public function scopeOfRawgId(Builder $query, int $rawgId)
+    public function scopeOfRawgId(Builder $query, int $rawgId): Builder
     {
         return $query->where('rawg_id', $rawgId);
     }
@@ -40,11 +40,11 @@ class Game extends Model
 
     public function gameLists()
     {
-        require $this->belongsToMany(GameList::class, 'game_list_games')->withTimestamps();
+        return $this->belongsToMany(GameList::class, 'game_list_games')->withTimestamps();
     }
 
     public function threads()
     {
-        require $this->belongsToMany(Thread::class);
+        return $this->hasMany(Thread::class);
     }
 }

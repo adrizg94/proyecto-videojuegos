@@ -11,10 +11,10 @@ class Creator extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'user_creators');
+        return $this->belongsToMany(User::class, 'user_creators')->withTimestamps();
     }
 
-    public function scopeOfName(Builder $query, string $name)
+    public function scopeOfName(Builder $query, string $name): Builder
     {
         return $query->where('name', $name);
     }

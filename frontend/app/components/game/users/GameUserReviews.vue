@@ -49,11 +49,13 @@
         class="relative flex flex-col gap-2 mb-4 rounded-md bg-surface/60 px-4 py-3"
       >
         <div class="flex items-center justify-between">
-          <div
+          <NuxtLink
+            :to="`/users/${review.user.username}`"
             class="flex items-center gap-2 font-semibold underline hover:text-primary-light"
           >
+            <FontAwesomeIcon icon="fa-user" />
             {{ review.user.username }}
-          </div>
+          </NuxtLink>
           <span>
             <FontAwesomeIcon
               v-for="star in 5"

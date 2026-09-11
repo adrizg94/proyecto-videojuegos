@@ -18,11 +18,6 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        // return response()->json([
-        //     'message' => 'User registered successfully',
-        //     'user' => $user,
-        // ], 201);
-
         return response()->json([
             'message' => 'User registered successfully',
             'user' => $user,

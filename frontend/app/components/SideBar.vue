@@ -2,7 +2,10 @@
   <aside class="bg-surface p-2">
     <nav class="flex flex-col gap-2">
       <NuxtLink to="/" class="flex items-center h-14 justify-center gap-1">
-        <img src="/images/branding/logo.png" class="h-13 object-contain pb-1 pl-2" />
+        <img
+          src="/images/branding/logo.png"
+          class="h-13 object-contain pb-1 pl-2"
+        />
         <img src="/images/branding/nextplay.png" class="h-10.5" />
       </NuxtLink>
       <!-- <NuxtLink to="/" class="flex items-center gap-2 h-12 border-b-2 border-white/10">
@@ -46,6 +49,12 @@
         class="btn-primary"
         :class="route.path === '/creators' ? 'bg-primary' : 'hover:bg-hover'"
         >Creators</NuxtLink
+      >
+      <NuxtLink
+        to="/community"
+        class="btn-primary"
+        :class="route.path === '/community' ? 'bg-primary' : 'hover:bg-hover'"
+        >Community</NuxtLink
       >
     </nav>
   </aside>

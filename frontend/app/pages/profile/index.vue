@@ -26,7 +26,11 @@
         @remove-entity-favorite="handleRemoveEntityFavorite"
       />
 
-      <UserLists :lists="profile.game_lists" />
+      <UserLists
+        :lists="profile.game_lists"
+        :list-base-path="`/users/${profile.user.username}/lists`"
+        from="profile"
+      />
 
       <UserReviews :reviews="profile.reviews" />
 

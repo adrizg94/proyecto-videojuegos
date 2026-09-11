@@ -18,8 +18,8 @@ class Thread extends Model
         return $this->belongsTo(Game::class);
     }
 
-    public function post()
+    public function posts()
     {
-        return $this->belongsTo(Post::class);
+        return $this->hasMany(Post::class);
     }
 }

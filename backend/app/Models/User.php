@@ -58,27 +58,26 @@ class User extends Authenticatable
 
     public function publishers()
     {
-        return $this->belongsToMany(Publisher::class, 'user_publishers');
+        return $this->belongsToMany(Publisher::class, 'user_publishers')->withTimestamps();
     }
 
     public function developers()
     {
-        return $this->belongsToMany(Developer::class, 'user_developers');
+        return $this->belongsToMany(Developer::class, 'user_developers')->withTimestamps();
     }
 
     public function creators()
     {
-        return $this->belongsToMany(Creator::class, 'user_creators');
+        return $this->belongsToMany(Creator::class, 'user_creators')->withTimestamps();
     }
 
     public function threads()
     {
-        return $this->belongsToMany(Thread::class);
-    }
-    
-    public function posts()
-    {
-        return $this->belongsToMany(Post::class);
+        return $this->hasMany(Thread::class);
     }
 
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
 }

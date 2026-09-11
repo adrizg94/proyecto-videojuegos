@@ -18,7 +18,10 @@
       <NuxtLink
         v-for="gameList in visibleLists"
         :key="gameList.id"
-        :to="`${listBasePath}/${gameList.id}`"
+        :to="{
+          path: `${listBasePath}/${gameList.id}`,
+          query: from ? { from } : {},
+        }"
         class="rounded-xl bg-surface p-5 hover:bg-hover transition-colors"
       >
         <h3 class="font-semibold text-lg">
@@ -59,7 +62,11 @@ const props = defineProps({
 
   listBasePath: {
     type: String,
-    default: "/profile/lists",
+    required: true,
+  },
+  from: {
+    type: String,
+    default: null,
   },
 });
 

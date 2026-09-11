@@ -5,28 +5,8 @@
       @click="emit('close')"
       class="block rounded px-3 py-2 hover:bg-hover"
     >
+      <FontAwesomeIcon icon="fa-id-card" />
       My profile
-    </NuxtLink>
-
-    <NuxtLink
-      to="/profile#games"
-      class="block rounded px-3 py-2 hover:bg-hover"
-    >
-      My games
-    </NuxtLink>
-
-    <NuxtLink
-      to="/profile#lists"
-      class="block rounded px-3 py-2 hover:bg-hover"
-    >
-      My lists
-    </NuxtLink>
-
-    <NuxtLink
-      to="/profile#reviews"
-      class="block rounded px-3 py-2 hover:bg-hover"
-    >
-      My reviews
     </NuxtLink>
 
     <div class="my-1 border-t border-white/10" />
