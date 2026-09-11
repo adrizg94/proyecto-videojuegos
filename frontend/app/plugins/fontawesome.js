@@ -48,6 +48,7 @@ import {
   faArrowUpRightFromSquare,
   faCalendar,
   faIdCard,
+  faHouse,
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
@@ -109,6 +110,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     faArrowUpRightFromSquare,
     faCalendar,
     faIdCard,
+    faHouse,
   );
 
   nuxtApp.vueApp.component("FontAwesomeIcon", FontAwesomeIcon);

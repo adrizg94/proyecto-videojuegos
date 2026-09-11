@@ -1,16 +1,20 @@
 <template>
+  <!-- Search -->
   <div class="flex items-center mx-auto h-20 max-w-sm mt-4 mb-1">
     <SearchBar
       v-model="searchText"
       :placeholder="`Search ${gamesCount} games...`"
     />
   </div>
+
+  <!-- Order and filters -->
   <div class="flex items-center gap-2 px-8">
     <GameOrderBy
       class="mr-10"
       v-model:selected="selectedOrder"
       v-model:open-dropdown="openDropdown"
     />
+
     <GameFilters
       v-model:genres="selectedGenres"
       v-model:tags="selectedTags"
@@ -26,6 +30,7 @@
       :options-developers="developers"
       :options-publishers="publishers"
     />
+
     <button
       v-if="hasFilters"
       type="button"
@@ -36,8 +41,11 @@
       Clear Filters
     </button>
   </div>
+
   <Loading v-if="status === 'pending'" />
+
   <div v-else>
+    <!-- Games -->
     <div
       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-7 pt-2 px-5"
     >
@@ -58,27 +66,70 @@
         />
       </div>
     </div>
+
+    <!-- Pagination -->
     <Pagination
       class="mt-5 mb-40"
       :current-page="currentPage"
       :total-pages="totalPages"
       @change-page="changePage"
     />
+
     <Chatbot />
     <Toast />
   </div>
 </template>
 
 <script setup>
+/*
+|--------------------------------------------------------------------------
+| Breadcrumbs
+|--------------------------------------------------------------------------
+*/
+
+const { setBreadcrumbs } = useBreadcrumbs();
+
+setBreadcrumbs([
+  {
+    label: "Games",
+  },
+]);
+
+/*
+|--------------------------------------------------------------------------
+| Route
+|--------------------------------------------------------------------------
+*/
+
 const route = useRoute();
 const router = useRouter();
+
+/*
+|--------------------------------------------------------------------------
+| State
+|--------------------------------------------------------------------------
+*/
+
 const gamesCount = ref(0);
+
+/*
+|--------------------------------------------------------------------------
+| Composables
+|--------------------------------------------------------------------------
+*/
+
 const { favoriteIds, toggleFavorite } = useFavorites();
 const { releaseAlertIds, toggleReleaseAlert } = useReleaseAlerts();
 const { isAuthenticated } = useAuth();
 
-// Función que recoge las querys de la url para buscar por filtros
-// mediante los enlaces de las fichas de juego
+/*
+|--------------------------------------------------------------------------
+| Initial filters from URL
+|--------------------------------------------------------------------------
+*/
+
+// Recoge los filtros recibidos mediante query params,
+// por ejemplo desde los enlaces de una ficha de juego.
 const getQueryIds = (query) => {
   if (!query) return [];
 
@@ -95,6 +146,12 @@ const initialFilters = {
   creators: getQueryIds(route.query.creators),
 };
 
+/*
+|--------------------------------------------------------------------------
+| Catalog
+|--------------------------------------------------------------------------
+*/
+
 const {
   currentPage,
   pageSize,
@@ -103,6 +160,12 @@ const {
   totalPages,
   changePage,
 } = useCatalog(gamesCount);
+
+/*
+|--------------------------------------------------------------------------
+| Filters
+|--------------------------------------------------------------------------
+*/
 
 const {
   openDropdown,
@@ -134,6 +197,12 @@ const {
   hasFilters,
 } = useFilters(currentPage, initialFilters);
 
+/*
+|--------------------------------------------------------------------------
+| Games
+|--------------------------------------------------------------------------
+*/
+
 const { data, status } = await useFetch("/api/games", {
   query: {
     page: currentPage,
@@ -156,6 +225,12 @@ const { data, status } = await useFetch("/api/games", {
 
 const games = computed(() => data.value?.results ?? []);
 
+/*
+|--------------------------------------------------------------------------
+| Favorites
+|--------------------------------------------------------------------------
+*/
+
 const handleFavorite = (game) => {
   toggleFavorite(
     favoriteIds.value.includes(game.id),
@@ -165,6 +240,12 @@ const handleFavorite = (game) => {
     game.background_image,
   );
 };
+
+/*
+|--------------------------------------------------------------------------
+| Release alerts
+|--------------------------------------------------------------------------
+*/
 
 const handleReleaseAlert = (game) => {
   toggleReleaseAlert(
@@ -176,12 +257,24 @@ const handleReleaseAlert = (game) => {
   );
 };
 
-// Cambiar estado despues de definir para evitar error is not defined
+/*
+|--------------------------------------------------------------------------
+| Watchers
+|--------------------------------------------------------------------------
+*/
+
 watchEffect(() => {
   gamesCount.value = data.value?.count ?? 0;
 });
 
-// Limpiamos la url cuando pasamos querys
+/*
+|--------------------------------------------------------------------------
+| Page initialization
+|--------------------------------------------------------------------------
+*/
+
+// Los filtros recibidos por URL ya se han guardado en initialFilters,
+// por lo que eliminamos los query params de la dirección visible.
 onMounted(() => {
   if (Object.keys(route.query).length) {
     router.replace({ path: "/games" });

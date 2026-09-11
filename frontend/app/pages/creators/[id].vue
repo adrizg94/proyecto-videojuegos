@@ -6,7 +6,9 @@
         @toggle-favorite="handleCreatorFavorite(creator)"
         :is-favorite="isAuthenticated && creatorNames.includes(creator.name)"
       />
+
       <PubliDevInfo :description="creator.description" />
+
       <PubliDevGames
         :games="games"
         query-name="creators"
@@ -14,6 +16,7 @@
         :games-count-text="`Credited on ${games.count} games`"
       />
     </div>
+
     <Toast />
   </div>
 </template>
@@ -21,11 +24,57 @@
 <script setup>
 import { useCreatorFavorites } from "~/composables/entities/useCreatorsFavorites";
 
+/*
+|--------------------------------------------------------------------------
+| Route & composables
+|--------------------------------------------------------------------------
+*/
+
 const route = useRoute();
 
 const { isAuthenticated } = useAuth();
+const { setBreadcrumbs } = useBreadcrumbs();
 
 const { creatorNames, toggleCreator } = useCreatorFavorites();
+
+/*
+|--------------------------------------------------------------------------
+| Creator
+|--------------------------------------------------------------------------
+*/
+
+const { data: creator } = await useFetch(`/api/creators/${route.params.id}`);
+
+setBreadcrumbs([
+  {
+    label: "Creators",
+    to: "/creators",
+  },
+  {
+    label: creator.value.name,
+  },
+]);
+
+/*
+|--------------------------------------------------------------------------
+| Games
+|--------------------------------------------------------------------------
+*/
+
+const { data: games } = await useFetch("/api/games", {
+  query: {
+    page: 1,
+    page_size: 20,
+
+    creators: creator.value.id,
+  },
+});
+
+/*
+|--------------------------------------------------------------------------
+| Favorites
+|--------------------------------------------------------------------------
+*/
 
 const handleCreatorFavorite = (creator) => {
   toggleCreator(
@@ -35,14 +84,4 @@ const handleCreatorFavorite = (creator) => {
     creator.image,
   );
 };
-
-const { data: creator } = await useFetch(`/api/creators/${route.params.id}`);
-const { data: games } = await useFetch("/api/games", {
-  query: {
-    page: 1,
-    page_size: 20,
-
-    creators: creator.value.id,
-  },
-});
 </script>

@@ -3,7 +3,7 @@
     <Loading v-if="pending" />
 
     <div v-else>
-      <!-- HEADER -->
+      <!-- Header -->
       <header class="mb-8">
         <NuxtLink
           to="/profile"
@@ -20,7 +20,7 @@
         </p>
       </header>
 
-      <!-- ACCOUNT INFORMATION -->
+      <!-- Account information -->
       <section class="rounded-2xl bg-surface p-6 mb-8">
         <div class="mb-6">
           <h2 class="text-xl font-bold">Account information</h2>
@@ -31,7 +31,7 @@
         </div>
 
         <form class="flex flex-col gap-5" @submit.prevent="updateAccount">
-          <!-- USERNAME -->
+          <!-- Username -->
           <div class="flex flex-col gap-2">
             <label for="username" class="font-medium"> Username </label>
 
@@ -48,7 +48,7 @@
             </p>
           </div>
 
-          <!-- EMAIL -->
+          <!-- Email -->
           <div class="flex flex-col gap-2">
             <label for="email" class="font-medium"> Email </label>
 
@@ -77,7 +77,7 @@
         </form>
       </section>
 
-      <!-- PASSWORD -->
+      <!-- Password -->
       <section class="rounded-2xl bg-surface p-6">
         <div class="mb-6">
           <h2 class="text-xl font-bold">Change password</h2>
@@ -88,7 +88,7 @@
         </div>
 
         <form class="flex flex-col gap-5" @submit.prevent="updatePassword">
-          <!-- CURRENT PASSWORD -->
+          <!-- Current password -->
           <div class="flex flex-col gap-2">
             <label for="current-password" class="font-medium">
               Current password
@@ -110,7 +110,7 @@
             </p>
           </div>
 
-          <!-- NEW PASSWORD -->
+          <!-- New password -->
           <div class="flex flex-col gap-2">
             <label for="password" class="font-medium"> New password </label>
 
@@ -127,7 +127,7 @@
             </p>
           </div>
 
-          <!-- PASSWORD CONFIRMATION -->
+          <!-- Password confirmation -->
           <div class="flex flex-col gap-2">
             <label for="password-confirmation" class="font-medium">
               Confirm new password
@@ -160,22 +160,49 @@
 </template>
 
 <script setup>
+/*
+|--------------------------------------------------------------------------
+| Breadcrumbs
+|--------------------------------------------------------------------------
+*/
+
+const { setBreadcrumbs } = useBreadcrumbs();
+
+setBreadcrumbs([
+  {
+    label: "My profile",
+    to: "/profile",
+  },
+  {
+    label: "Settings",
+  },
+]);
+
+/*
+|--------------------------------------------------------------------------
+| Composables
+|--------------------------------------------------------------------------
+*/
+
 const { apiFetch } = useApi();
 const { user, fetchUser } = useAuth();
 const { showToast } = useToast();
 
-// --------------------------------
-// PAGE
-// --------------------------------
+/*
+|--------------------------------------------------------------------------
+| Page state
+|--------------------------------------------------------------------------
+*/
 
 const pending = ref(true);
-
 const savingAccount = ref(false);
 const savingPassword = ref(false);
 
-// --------------------------------
-// ACCOUNT FORM
-// --------------------------------
+/*
+|--------------------------------------------------------------------------
+| Account form
+|--------------------------------------------------------------------------
+*/
 
 const accountForm = reactive({
   username: "",
@@ -184,9 +211,11 @@ const accountForm = reactive({
 
 const accountErrors = ref({});
 
-// --------------------------------
-// PASSWORD FORM
-// --------------------------------
+/*
+|--------------------------------------------------------------------------
+| Password form
+|--------------------------------------------------------------------------
+*/
 
 const passwordForm = reactive({
   current_password: "",
@@ -196,33 +225,11 @@ const passwordForm = reactive({
 
 const passwordErrors = ref({});
 
-// --------------------------------
-// INITIAL LOAD
-// --------------------------------
-
-onMounted(async () => {
-  try {
-    if (!user.value) {
-      await fetchUser();
-    }
-
-    if (!user.value) {
-      await navigateTo("/login");
-      return;
-    }
-
-    accountForm.username = user.value.username;
-    accountForm.email = user.value.email;
-  } catch (error) {
-    console.error("Error loading settings:", error);
-  } finally {
-    pending.value = false;
-  }
-});
-
-// --------------------------------
-// UPDATE ACCOUNT
-// --------------------------------
+/*
+|--------------------------------------------------------------------------
+| Account update
+|--------------------------------------------------------------------------
+*/
 
 const updateAccount = async () => {
   accountErrors.value = {};
@@ -231,15 +238,14 @@ const updateAccount = async () => {
   try {
     const response = await apiFetch("profile", {
       method: "PUT",
-
       body: {
         username: accountForm.username,
         email: accountForm.email,
       },
     });
 
-    // Actualiza también useAuth para que cambie
-    // inmediatamente el username de la TopBar.
+    // Actualizar useAuth para reflejar inmediatamente
+    // el nuevo username en la TopBar.
     user.value = response.user;
 
     showToast(response.message);
@@ -258,9 +264,11 @@ const updateAccount = async () => {
   }
 };
 
-// --------------------------------
-// UPDATE PASSWORD
-// --------------------------------
+/*
+|--------------------------------------------------------------------------
+| Password update
+|--------------------------------------------------------------------------
+*/
 
 const updatePassword = async () => {
   passwordErrors.value = {};
@@ -269,12 +277,9 @@ const updatePassword = async () => {
   try {
     const response = await apiFetch("profile/password", {
       method: "PUT",
-
       body: {
         current_password: passwordForm.current_password,
-
         password: passwordForm.password,
-
         password_confirmation: passwordForm.password_confirmation,
       },
     });
@@ -296,4 +301,30 @@ const updatePassword = async () => {
     savingPassword.value = false;
   }
 };
+
+/*
+|--------------------------------------------------------------------------
+| Page initialization
+|--------------------------------------------------------------------------
+*/
+
+onMounted(async () => {
+  try {
+    if (!user.value) {
+      await fetchUser();
+    }
+
+    if (!user.value) {
+      await navigateTo("/login");
+      return;
+    }
+
+    accountForm.username = user.value.username;
+    accountForm.email = user.value.email;
+  } catch (error) {
+    console.error("Error loading settings:", error);
+  } finally {
+    pending.value = false;
+  }
+});
 </script>

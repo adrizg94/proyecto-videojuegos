@@ -3,7 +3,7 @@
     :to="{
       path: `/users/${list.user.username}/lists/${list.id}`,
       query: {
-        from: 'community',
+        from: 'community-lists',
       },
     }"
     class="group flex flex-col rounded-xl border border-white/10 bg-surface p-5 transition duration-200 hover:bg-hover hover:shadow-lg"

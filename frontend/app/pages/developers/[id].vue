@@ -8,7 +8,9 @@
           isAuthenticated && developerNames.includes(developer.name)
         "
       />
+
       <PubliDevInfo :description="developer.description" />
+
       <PubliDevGames
         :games="games"
         query-name="developers"
@@ -16,6 +18,7 @@
         :games-count-text="`${games.count} developed games`"
       />
     </div>
+
     <Toast />
   </div>
 </template>
@@ -23,11 +26,59 @@
 <script setup>
 import { useDeveloperFavorites } from "~/composables/entities/useDevelopersFavorites";
 
+/*
+|--------------------------------------------------------------------------
+| Route & composables
+|--------------------------------------------------------------------------
+*/
+
 const route = useRoute();
 
 const { isAuthenticated } = useAuth();
+const { setBreadcrumbs } = useBreadcrumbs();
 
 const { developerNames, toggleDeveloper } = useDeveloperFavorites();
+
+/*
+|--------------------------------------------------------------------------
+| Developer
+|--------------------------------------------------------------------------
+*/
+
+const { data: developer } = await useFetch(
+  `/api/developers/${route.params.id}`,
+);
+
+setBreadcrumbs([
+  {
+    label: "Developers",
+    to: "/developers",
+  },
+  {
+    label: developer.value.name,
+  },
+]);
+
+/*
+|--------------------------------------------------------------------------
+| Games
+|--------------------------------------------------------------------------
+*/
+
+const { data: games } = await useFetch("/api/games", {
+  query: {
+    page: 1,
+    page_size: 20,
+
+    developers: developer.value.id,
+  },
+});
+
+/*
+|--------------------------------------------------------------------------
+| Favorites
+|--------------------------------------------------------------------------
+*/
 
 const handleDeveloperFavorite = (developer) => {
   toggleDeveloper(
@@ -37,16 +88,4 @@ const handleDeveloperFavorite = (developer) => {
     developer.image_background,
   );
 };
-
-const { data: developer } = await useFetch(
-  `/api/developers/${route.params.id}`,
-);
-const { data: games } = await useFetch("/api/games", {
-  query: {
-    page: 1,
-    page_size: 20,
-
-    developers: developer.value.id,
-  },
-});
 </script>

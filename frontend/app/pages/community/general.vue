@@ -42,9 +42,7 @@
             class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-80 cursor-pointer"
             @click="toggleCreateForm"
           >
-            <FontAwesomeIcon
-              :icon="showCreateForm ? 'fa-xmark' : 'fa-plus'"
-            />
+            <FontAwesomeIcon :icon="showCreateForm ? 'fa-xmark' : 'fa-plus'" />
 
             {{ showCreateForm ? "Cancel" : "Create thread" }}
           </button>
@@ -198,9 +196,39 @@
 </template>
 
 <script setup>
+/*
+|--------------------------------------------------------------------------
+| Breadcrumbs
+|--------------------------------------------------------------------------
+*/
+
+const { setBreadcrumbs } = useBreadcrumbs();
+
+setBreadcrumbs([
+  {
+    label: "Community",
+    to: "/community",
+  },
+  {
+    label: "General discussions",
+  },
+]);
+
+/*
+|--------------------------------------------------------------------------
+| Composables
+|--------------------------------------------------------------------------
+*/
+
 const { apiFetch } = useApi();
 const { isAuthenticated } = useAuth();
 const { showToast } = useToast();
+
+/*
+|--------------------------------------------------------------------------
+| State
+|--------------------------------------------------------------------------
+*/
 
 const pending = ref(true);
 const creating = ref(false);
@@ -214,6 +242,12 @@ const form = reactive({
   title: "",
   body: "",
 });
+
+/*
+|--------------------------------------------------------------------------
+| Filtered threads
+|--------------------------------------------------------------------------
+*/
 
 const filteredThreads = computed(() => {
   const query = search.value.toLowerCase();
@@ -230,12 +264,30 @@ const filteredThreads = computed(() => {
   });
 });
 
+/*
+|--------------------------------------------------------------------------
+| Threads
+|--------------------------------------------------------------------------
+*/
+
 const fetchThreads = async () => {
   try {
     threads.value = await apiFetch("community/general");
   } catch (error) {
     console.error("Error loading general discussions:", error);
   }
+};
+
+/*
+|--------------------------------------------------------------------------
+| Create form
+|--------------------------------------------------------------------------
+*/
+
+const resetForm = () => {
+  form.title = "";
+  form.body = "";
+  errors.value = {};
 };
 
 const toggleCreateForm = () => {
@@ -246,16 +298,16 @@ const toggleCreateForm = () => {
   }
 };
 
-const resetForm = () => {
-  form.title = "";
-  form.body = "";
-  errors.value = {};
-};
-
 const cancelCreate = () => {
   resetForm();
   showCreateForm.value = false;
 };
+
+/*
+|--------------------------------------------------------------------------
+| Create thread
+|--------------------------------------------------------------------------
+*/
 
 const createThread = async () => {
   errors.value = {};
@@ -264,7 +316,6 @@ const createThread = async () => {
   try {
     const response = await apiFetch("community/threads", {
       method: "POST",
-
       body: {
         title: form.title,
         body: form.body,
@@ -291,6 +342,12 @@ const createThread = async () => {
     creating.value = false;
   }
 };
+
+/*
+|--------------------------------------------------------------------------
+| Page initialization
+|--------------------------------------------------------------------------
+*/
 
 onMounted(async () => {
   await fetchThreads();

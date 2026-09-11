@@ -65,7 +65,7 @@
 
         <CommunityThreadList
           :threads="latestThreads"
-          :empty-message="'There are no discussions yet.'"
+          empty-message="There are no discussions yet."
         />
       </section>
     </div>
@@ -75,10 +75,42 @@
 <script setup>
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
+/*
+|--------------------------------------------------------------------------
+| Breadcrumbs
+|--------------------------------------------------------------------------
+*/
+
+const { setBreadcrumbs } = useBreadcrumbs();
+
+setBreadcrumbs([
+  {
+    label: "Community",
+  },
+]);
+
+/*
+|--------------------------------------------------------------------------
+| Composables
+|--------------------------------------------------------------------------
+*/
+
 const { apiFetch } = useApi();
+
+/*
+|--------------------------------------------------------------------------
+| State
+|--------------------------------------------------------------------------
+*/
 
 const pending = ref(true);
 const latestThreads = ref([]);
+
+/*
+|--------------------------------------------------------------------------
+| Community
+|--------------------------------------------------------------------------
+*/
 
 const fetchCommunity = async () => {
   try {
@@ -91,6 +123,12 @@ const fetchCommunity = async () => {
     pending.value = false;
   }
 };
+
+/*
+|--------------------------------------------------------------------------
+| Page initialization
+|--------------------------------------------------------------------------
+*/
 
 onMounted(fetchCommunity);
 </script>

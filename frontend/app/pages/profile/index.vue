@@ -50,6 +50,26 @@ import { useCreatorFavorites } from "~/composables/entities/useCreatorsFavorites
 import { useDeveloperFavorites } from "~/composables/entities/useDevelopersFavorites";
 import { usePublisherFavorites } from "~/composables/entities/usePublishersFavorites";
 
+/*
+|--------------------------------------------------------------------------
+| Breadcrumbs
+|--------------------------------------------------------------------------
+*/
+
+const { setBreadcrumbs } = useBreadcrumbs();
+
+setBreadcrumbs([
+  {
+    label: "My profile",
+  },
+]);
+
+/*
+|--------------------------------------------------------------------------
+| Composables
+|--------------------------------------------------------------------------
+*/
+
 const { apiFetch } = useApi();
 const { user, fetchUser } = useAuth();
 
@@ -60,9 +80,11 @@ const { removePublisher } = usePublisherFavorites();
 const { removeDeveloper } = useDeveloperFavorites();
 const { removeCreator } = useCreatorFavorites();
 
-// --------------------------------
-// PROFILE
-// --------------------------------
+/*
+|--------------------------------------------------------------------------
+| Profile
+|--------------------------------------------------------------------------
+*/
 
 const pending = ref(true);
 
@@ -82,6 +104,84 @@ const fetchProfile = async () => {
   profile.value = await apiFetch("profile");
 };
 
+/*
+|--------------------------------------------------------------------------
+| Game IDs
+|--------------------------------------------------------------------------
+*/
+
+const favoriteGameIds = computed(() => {
+  return profile.value.favorite_games.map((game) => game.rawg_id);
+});
+
+const releaseAlertIds = computed(() => {
+  return profile.value.release_alerts.map((game) => game.rawg_id);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Game favorites
+|--------------------------------------------------------------------------
+*/
+
+const handleGameFavorite = async (game) => {
+  await toggleFavorite(
+    favoriteGameIds.value.includes(game.id),
+    game.id,
+    game.name,
+    game.released,
+    game.background_image,
+  );
+
+  await fetchProfile();
+};
+
+/*
+|--------------------------------------------------------------------------
+| Release alerts
+|--------------------------------------------------------------------------
+*/
+
+const handleReleaseAlert = async (game) => {
+  await toggleReleaseAlert(
+    releaseAlertIds.value.includes(game.id),
+    game.id,
+    game.name,
+    game.released,
+    game.background_image,
+  );
+
+  await fetchProfile();
+};
+
+/*
+|--------------------------------------------------------------------------
+| Entity favorites
+|--------------------------------------------------------------------------
+*/
+
+const entityRemoveActions = {
+  Publishers: removePublisher,
+  Developers: removeDeveloper,
+  Creators: removeCreator,
+};
+
+const handleRemoveEntityFavorite = async (groupTitle, entity) => {
+  const removeFavorite = entityRemoveActions[groupTitle];
+
+  if (!removeFavorite) return;
+
+  await removeFavorite(entity.name);
+
+  await fetchProfile();
+};
+
+/*
+|--------------------------------------------------------------------------
+| Page initialization
+|--------------------------------------------------------------------------
+*/
+
 onMounted(async () => {
   try {
     if (!user.value) {
@@ -100,68 +200,4 @@ onMounted(async () => {
     pending.value = false;
   }
 });
-
-// --------------------------------
-// IDS
-// --------------------------------
-
-const favoriteGameIds = computed(() => {
-  return profile.value.favorite_games.map((game) => game.rawg_id);
-});
-
-const releaseAlertIds = computed(() => {
-  return profile.value.release_alerts.map((game) => game.rawg_id);
-});
-
-// --------------------------------
-// GAME FAVORITES
-// --------------------------------
-
-const handleGameFavorite = async (game) => {
-  await toggleFavorite(
-    favoriteGameIds.value.includes(game.id),
-    game.id,
-    game.name,
-    game.released,
-    game.background_image,
-  );
-
-  await fetchProfile();
-};
-
-// --------------------------------
-// RELEASE ALERTS
-// --------------------------------
-
-const handleReleaseAlert = async (game) => {
-  await toggleReleaseAlert(
-    releaseAlertIds.value.includes(game.id),
-    game.id,
-    game.name,
-    game.released,
-    game.background_image,
-  );
-
-  await fetchProfile();
-};
-
-// --------------------------------
-// ENTITY FAVORITES
-// --------------------------------
-
-const entityRemoveActions = {
-  Publishers: removePublisher,
-  Developers: removeDeveloper,
-  Creators: removeCreator,
-};
-
-const handleRemoveEntityFavorite = async (groupTitle, entity) => {
-  const removeFavorite = entityRemoveActions[groupTitle];
-
-  if (!removeFavorite) return;
-
-  await removeFavorite(entity.name);
-
-  await fetchProfile();
-};
 </script>

@@ -1,12 +1,16 @@
 <template>
+  <!-- Search -->
   <div class="flex items-center mx-auto h-20 max-w-sm mt-4">
     <SearchBar
       v-model="searchText"
       :placeholder="`Search ${developersCount} developers...`"
     />
   </div>
+
   <Loading v-if="status === 'pending'" />
+
   <div v-else>
+    <!-- Developers -->
     <div
       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-7 pt-2 px-5"
     >
@@ -15,11 +19,6 @@
         :key="developer.id"
         class="flex justify-center py-3"
       >
-        <!-- <Card
-          :image="developer.image_background"
-          :name="developer.name"
-          :link="`/developers/${developer.id}`"
-        /> -->
         <Card
           :entity="developer"
           :link="`/developers/${developer.id}`"
@@ -32,12 +31,15 @@
         />
       </div>
     </div>
+
+    <!-- Pagination -->
     <Pagination
       class="mt-5 mb-40"
       :current-page="currentPage"
       :total-pages="totalPages"
       @change-page="changePage"
     />
+
     <Toast />
   </div>
 </template>
@@ -45,7 +47,33 @@
 <script setup>
 import { useDeveloperFavorites } from "~/composables/entities/useDevelopersFavorites";
 
+/*
+|--------------------------------------------------------------------------
+| Breadcrumbs
+|--------------------------------------------------------------------------
+*/
+
+const { setBreadcrumbs } = useBreadcrumbs();
+
+setBreadcrumbs([
+  {
+    label: "Developers",
+  },
+]);
+
+/*
+|--------------------------------------------------------------------------
+| State
+|--------------------------------------------------------------------------
+*/
+
 const developersCount = ref("");
+
+/*
+|--------------------------------------------------------------------------
+| Composables
+|--------------------------------------------------------------------------
+*/
 
 const { isAuthenticated } = useAuth();
 
@@ -61,6 +89,12 @@ const {
   changePage,
 } = useCatalog(developersCount);
 
+/*
+|--------------------------------------------------------------------------
+| Developers
+|--------------------------------------------------------------------------
+*/
+
 const { data, status } = await useFetch("/api/developers", {
   query: {
     page: currentPage,
@@ -71,7 +105,13 @@ const { data, status } = await useFetch("/api/developers", {
   },
 });
 
-const developers = computed(() => data.value.results ?? []);
+const developers = computed(() => data.value?.results ?? []);
+
+/*
+|--------------------------------------------------------------------------
+| Favorites
+|--------------------------------------------------------------------------
+*/
 
 const handleDeveloperFavorite = (developer) => {
   toggleDeveloper(
@@ -81,6 +121,12 @@ const handleDeveloperFavorite = (developer) => {
     developer.image_background,
   );
 };
+
+/*
+|--------------------------------------------------------------------------
+| Watchers
+|--------------------------------------------------------------------------
+*/
 
 watchEffect(() => {
   developersCount.value = data.value?.count ?? 0;

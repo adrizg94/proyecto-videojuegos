@@ -121,11 +121,31 @@
 </template>
 
 <script setup>
+/*
+|--------------------------------------------------------------------------
+| Route & composables
+|--------------------------------------------------------------------------
+*/
+
 const route = useRoute();
+
 const { apiFetch } = useApi();
+const { setBreadcrumbs } = useBreadcrumbs();
+
+/*
+|--------------------------------------------------------------------------
+| State
+|--------------------------------------------------------------------------
+*/
 
 const pending = ref(true);
 const data = ref(null);
+
+/*
+|--------------------------------------------------------------------------
+| Navigation
+|--------------------------------------------------------------------------
+*/
 
 const backLink = computed(() => {
   if (route.query.from === "community-lists") {
@@ -151,6 +171,62 @@ const backText = computed(() => {
   return `Back to ${data.value?.user.username ?? ""}'s profile`;
 });
 
+/*
+|--------------------------------------------------------------------------
+| Breadcrumbs
+|--------------------------------------------------------------------------
+*/
+
+const setListBreadcrumbs = () => {
+  if (route.query.from === "community-lists") {
+    setBreadcrumbs([
+      {
+        label: "Community",
+        to: "/community",
+      },
+      {
+        label: "Community lists",
+        to: "/community/lists",
+      },
+      {
+        label: data.value.list.title,
+      },
+    ]);
+
+    return;
+  }
+
+  if (route.query.from === "profile") {
+    setBreadcrumbs([
+      {
+        label: "My profile",
+        to: "/profile",
+      },
+      {
+        label: data.value.list.title,
+      },
+    ]);
+
+    return;
+  }
+
+  setBreadcrumbs([
+    {
+      label: data.value.user.username,
+      to: `/users/${data.value.user.username}`,
+    },
+    {
+      label: data.value.list.title,
+    },
+  ]);
+};
+
+/*
+|--------------------------------------------------------------------------
+| Helpers
+|--------------------------------------------------------------------------
+*/
+
 const normalizeGame = (game) => {
   return {
     id: game.rawg_id,
@@ -170,11 +246,19 @@ const formatDate = (date) => {
   });
 };
 
+/*
+|--------------------------------------------------------------------------
+| List
+|--------------------------------------------------------------------------
+*/
+
 const fetchList = async () => {
   try {
     data.value = await apiFetch(
       `users/${encodeURIComponent(route.params.username)}/lists/${route.params.id}`,
     );
+
+    setListBreadcrumbs();
   } catch (error) {
     console.error("Error loading public list:", error);
 
@@ -183,6 +267,12 @@ const fetchList = async () => {
     pending.value = false;
   }
 };
+
+/*
+|--------------------------------------------------------------------------
+| Page initialization
+|--------------------------------------------------------------------------
+*/
 
 onMounted(fetchList);
 </script>

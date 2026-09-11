@@ -343,8 +343,6 @@
           </NuxtLink>
         </div>
       </section>
-
-      <Toast />
     </div>
 
     <!-- Thread not found / error -->
@@ -385,21 +383,33 @@
 </template>
 
 <script setup>
-import ConfirmModal from '~/components/common/ConfirmModal.vue';
+import ConfirmModal from "~/components/common/ConfirmModal.vue";
+
+/*
+|--------------------------------------------------------------------------
+| Route & composables
+|--------------------------------------------------------------------------
+*/
 
 const route = useRoute();
 
 const { apiFetch } = useApi();
 const { user, isAuthenticated, fetchUser } = useAuth();
-
 const { showToast } = useToast();
+const { setBreadcrumbs } = useBreadcrumbs();
+
+/*
+|--------------------------------------------------------------------------
+| Thread
+|--------------------------------------------------------------------------
+*/
 
 const pending = ref(true);
 const thread = ref(null);
 
 /*
 |--------------------------------------------------------------------------
-| THREAD TITLE
+| Thread title
 |--------------------------------------------------------------------------
 */
 
@@ -410,7 +420,7 @@ const titleErrors = ref({});
 
 /*
 |--------------------------------------------------------------------------
-| POSTS
+| Posts
 |--------------------------------------------------------------------------
 */
 
@@ -421,7 +431,7 @@ const postErrors = ref({});
 
 /*
 |--------------------------------------------------------------------------
-| REPLY
+| Reply
 |--------------------------------------------------------------------------
 */
 
@@ -431,7 +441,21 @@ const replyErrors = ref({});
 
 /*
 |--------------------------------------------------------------------------
-| COMPUTED
+| Delete modal
+|--------------------------------------------------------------------------
+*/
+
+const deleteModal = reactive({
+  show: false,
+  type: null,
+  post: null,
+});
+
+const deleting = ref(false);
+
+/*
+|--------------------------------------------------------------------------
+| Computed
 |--------------------------------------------------------------------------
 */
 
@@ -455,7 +479,42 @@ const backText = computed(() => {
 
 /*
 |--------------------------------------------------------------------------
-| HELPERS
+| Breadcrumbs
+|--------------------------------------------------------------------------
+*/
+
+const setThreadBreadcrumbs = () => {
+  if (!thread.value) return;
+
+  const items = [
+    {
+      label: "Community",
+      to: "/community",
+    },
+  ];
+
+  if (thread.value.game) {
+    items.push({
+      label: thread.value.game.name,
+      to: `/community/games/${thread.value.game.rawg_id}`,
+    });
+  } else {
+    items.push({
+      label: "General discussions",
+      to: "/community/general",
+    });
+  }
+
+  items.push({
+    label: thread.value.title,
+  });
+
+  setBreadcrumbs(items);
+};
+
+/*
+|--------------------------------------------------------------------------
+| Helpers
 |--------------------------------------------------------------------------
 */
 
@@ -477,22 +536,25 @@ const formatDate = (date) => {
 
 /*
 |--------------------------------------------------------------------------
-| FETCH THREAD
+| Fetch thread
 |--------------------------------------------------------------------------
 */
 
 const fetchThread = async () => {
   try {
     thread.value = await apiFetch(`community/threads/${route.params.id}`);
+
+    setThreadBreadcrumbs();
   } catch (error) {
     console.error("Error loading thread:", error);
+
     thread.value = null;
   }
 };
 
 /*
 |--------------------------------------------------------------------------
-| UPDATE THREAD TITLE
+| Update thread title
 |--------------------------------------------------------------------------
 */
 
@@ -541,7 +603,7 @@ const updateThreadTitle = async () => {
 
 /*
 |--------------------------------------------------------------------------
-| EDIT POST
+| Edit post
 |--------------------------------------------------------------------------
 */
 
@@ -591,17 +653,9 @@ const updatePost = async (post) => {
 
 /*
 |--------------------------------------------------------------------------
-| DELETE THREAD / POST
+| Delete thread / post
 |--------------------------------------------------------------------------
 */
-
-const deleteModal = reactive({
-  show: false,
-  type: null,
-  post: null,
-});
-
-const deleting = ref(false);
 
 const askDeleteThread = () => {
   deleteModal.type = "thread";
@@ -613,6 +667,14 @@ const askDeletePost = (post) => {
   deleteModal.type = "post";
   deleteModal.post = post;
   deleteModal.show = true;
+};
+
+const cancelDelete = () => {
+  if (deleting.value) return;
+
+  deleteModal.show = false;
+  deleteModal.type = null;
+  deleteModal.post = null;
 };
 
 const confirmDelete = async () => {
@@ -659,17 +721,9 @@ const confirmDelete = async () => {
   }
 };
 
-const cancelDelete = () => {
-  if (deleting.value) return;
-
-  deleteModal.show = false;
-  deleteModal.type = null;
-  deleteModal.post = null;
-};
-
 /*
 |--------------------------------------------------------------------------
-| CREATE REPLY
+| Create reply
 |--------------------------------------------------------------------------
 */
 
@@ -710,14 +764,14 @@ const createReply = async () => {
 
 /*
 |--------------------------------------------------------------------------
-| LOAD PAGE
+| Page initialization
 |--------------------------------------------------------------------------
 */
 
 onMounted(async () => {
   try {
-    // Necesitamos conocer el usuario también en una página pública
-    // para saber si puede editar/responder.
+    // La página es pública, pero necesitamos conocer el usuario
+    // para comprobar permisos de edición y permitir respuestas.
     if (!user.value) {
       await fetchUser();
     }

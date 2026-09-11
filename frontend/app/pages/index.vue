@@ -1,5 +1,6 @@
 <template>
   <IndexHero />
+
   <div class="flex justify-center items-center">
     <IndexCalendar
       :current-date="currentDate"
@@ -24,7 +25,9 @@
       @select-date="selectDate"
     />
   </div>
+
   <Loading v-if="status === 'pending'" />
+
   <div v-else class="relative">
     <div class="grid grid-cols-[0.1fr_1fr_0.1fr]">
       <!-- Anterior periodo -->
@@ -36,6 +39,7 @@
       >
         <FontAwesomeIcon icon="fa-arrow-left-long" class="text-3xl" />
       </button>
+
       <!-- Fichas de juegos -->
       <div
         class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-6 pt-2"
@@ -57,6 +61,7 @@
           />
         </div>
       </div>
+
       <!-- Siguiente periodo -->
       <button
         type="button"
@@ -67,6 +72,7 @@
         <FontAwesomeIcon icon="fa-arrow-right-long" class="text-3xl" />
       </button>
     </div>
+
     <Pagination
       v-if="games.length"
       class="my-5"
@@ -74,8 +80,10 @@
       :total-pages="totalPages"
       @change-page="changePage"
     />
+
     <Chatbot />
   </div>
+
   <Toast />
 </template>
 
@@ -83,11 +91,36 @@
 import Card from "~/components/Card.vue";
 import { useReleaseTimeline } from "~/composables/useReleaseTimeline";
 
+/*
+|--------------------------------------------------------------------------
+| Breadcrumbs
+|--------------------------------------------------------------------------
+*/
+
+const { setBreadcrumbs } = useBreadcrumbs();
+
+setBreadcrumbs([
+  {
+    label: "Releases",
+  },
+]);
+
+/*
+|--------------------------------------------------------------------------
+| Catalog pagination
+|--------------------------------------------------------------------------
+*/
+
 const pageSize = 8;
 const gamesCount = ref(0);
-// const config = useRuntimeConfig();
 
 const { currentPage, totalPages, changePage } = useCatalog(gamesCount);
+
+/*
+|--------------------------------------------------------------------------
+| Release timeline
+|--------------------------------------------------------------------------
+*/
 
 const {
   selectedPeriod,
@@ -99,6 +132,12 @@ const {
   goToToday,
   selectDate,
 } = useReleaseTimeline();
+
+/*
+|--------------------------------------------------------------------------
+| Filters
+|--------------------------------------------------------------------------
+*/
 
 const {
   openDropdown,
@@ -128,6 +167,12 @@ const {
   hasFilters,
 } = useFilters(currentPage);
 
+/*
+|--------------------------------------------------------------------------
+| Games
+|--------------------------------------------------------------------------
+*/
+
 const { data, status } = await useFetch("/api/games", {
   query: {
     dates: computed(() => `${dateRange.value.start},${dateRange.value.end}`),
@@ -144,11 +189,19 @@ const { data, status } = await useFetch("/api/games", {
   },
 });
 
-const { isAuthenticated } = useAuth();
-const { favoriteIds, toggleFavorite } = useFavorites();
-const { releaseAlertIds, toggleReleaseAlert } = useReleaseAlerts();
+const games = computed(() => data.value?.results ?? []);
 
-const games = computed(() => data.value.results);
+/*
+|--------------------------------------------------------------------------
+| User game relations
+|--------------------------------------------------------------------------
+*/
+
+const { isAuthenticated } = useAuth();
+
+const { favoriteIds, toggleFavorite } = useFavorites();
+
+const { releaseAlertIds, toggleReleaseAlert } = useReleaseAlerts();
 
 const handleFavorite = (game) => {
   toggleFavorite(
@@ -170,12 +223,18 @@ const handleReleaseAlert = (game) => {
   );
 };
 
-// Volver a la página inicial cuando se cambia el periodo
+/*
+|--------------------------------------------------------------------------
+| Watchers
+|--------------------------------------------------------------------------
+*/
+
+// Volver a la página inicial cuando se cambia el periodo.
 watch([selectedPeriod, currentDate], () => {
   currentPage.value = 1;
 });
 
-// Cambiar estado despues de definir para evitar error is not defined
+// Actualizar el total después de que useFetch haya definido los datos.
 watchEffect(() => {
   gamesCount.value = data.value?.count ?? 0;
 });

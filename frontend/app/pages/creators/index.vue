@@ -1,12 +1,16 @@
 <template>
+  <!-- Search -->
   <div class="flex items-center mx-auto h-20 max-w-sm mt-4">
     <SearchBar
       v-model="searchText"
       :placeholder="`Search ${creatorsCount} creators...`"
     />
   </div>
+
   <Loading v-if="status === 'pending'" />
+
   <div v-else>
+    <!-- Creators -->
     <div
       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 3xl:grid-cols-9 pt-2 px-5"
     >
@@ -23,12 +27,15 @@
         />
       </div>
     </div>
+
+    <!-- Pagination -->
     <Pagination
       class="mt-5 mb-40"
       :current-page="currentPage"
       :total-pages="totalPages"
       @change-page="changePage"
     />
+
     <Toast />
   </div>
 </template>
@@ -36,7 +43,33 @@
 <script setup>
 import { useCreatorFavorites } from "~/composables/entities/useCreatorsFavorites";
 
+/*
+|--------------------------------------------------------------------------
+| Breadcrumbs
+|--------------------------------------------------------------------------
+*/
+
+const { setBreadcrumbs } = useBreadcrumbs();
+
+setBreadcrumbs([
+  {
+    label: "Creators",
+  },
+]);
+
+/*
+|--------------------------------------------------------------------------
+| State
+|--------------------------------------------------------------------------
+*/
+
 const creatorsCount = ref("");
+
+/*
+|--------------------------------------------------------------------------
+| Composables
+|--------------------------------------------------------------------------
+*/
 
 const { isAuthenticated } = useAuth();
 
@@ -51,6 +84,12 @@ const {
   changePage,
 } = useCatalog(creatorsCount, 24);
 
+/*
+|--------------------------------------------------------------------------
+| Creators
+|--------------------------------------------------------------------------
+*/
+
 const { data, status } = await useFetch("/api/creators", {
   query: {
     page: currentPage,
@@ -61,7 +100,13 @@ const { data, status } = await useFetch("/api/creators", {
   },
 });
 
-const creators = computed(() => data.value.results ?? []);
+const creators = computed(() => data.value?.results ?? []);
+
+/*
+|--------------------------------------------------------------------------
+| Favorites
+|--------------------------------------------------------------------------
+*/
 
 const handleCreatorFavorite = (creator) => {
   toggleCreator(
@@ -71,6 +116,12 @@ const handleCreatorFavorite = (creator) => {
     creator.image,
   );
 };
+
+/*
+|--------------------------------------------------------------------------
+| Watchers
+|--------------------------------------------------------------------------
+*/
 
 watchEffect(() => {
   creatorsCount.value = data.value?.count ?? 0;

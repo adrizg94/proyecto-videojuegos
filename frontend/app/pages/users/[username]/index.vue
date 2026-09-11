@@ -30,8 +30,22 @@ import UserFavorites from "~/components/users/profile/UserFavorites.vue";
 import UserLists from "~/components/users/profile/UserLists.vue";
 import UserReviews from "~/components/users/profile/UserReviews.vue";
 
+/*
+|--------------------------------------------------------------------------
+| Route & composables
+|--------------------------------------------------------------------------
+*/
+
 const route = useRoute();
+
 const { apiFetch } = useApi();
+const { setBreadcrumbs } = useBreadcrumbs();
+
+/*
+|--------------------------------------------------------------------------
+| State
+|--------------------------------------------------------------------------
+*/
 
 const pending = ref(true);
 
@@ -45,11 +59,29 @@ const profile = ref({
   reviews: [],
 });
 
+/*
+|--------------------------------------------------------------------------
+| Profile
+|--------------------------------------------------------------------------
+*/
+
 const fetchProfile = async () => {
   profile.value = await apiFetch(
     `users/${encodeURIComponent(route.params.username)}`,
   );
+
+  setBreadcrumbs([
+    {
+      label: profile.value.user.username,
+    },
+  ]);
 };
+
+/*
+|--------------------------------------------------------------------------
+| Page initialization
+|--------------------------------------------------------------------------
+*/
 
 onMounted(async () => {
   try {

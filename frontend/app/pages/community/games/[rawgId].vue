@@ -235,15 +235,33 @@
 </template>
 
 <script setup>
+/*
+|--------------------------------------------------------------------------
+| Route & breadcrumbs
+|--------------------------------------------------------------------------
+*/
+
 const route = useRoute();
 
+const rawgId = computed(() => route.params.rawgId);
+
+const { setBreadcrumbs } = useBreadcrumbs();
+
+/*
+|--------------------------------------------------------------------------
+| Composables
+|--------------------------------------------------------------------------
+*/
+
 const { apiFetch } = useApi();
-
 const { user, isAuthenticated, fetchUser } = useAuth();
-
 const { showToast } = useToast();
 
-const rawgId = route.params.rawgId;
+/*
+|--------------------------------------------------------------------------
+| State
+|--------------------------------------------------------------------------
+*/
 
 const pending = ref(true);
 const creating = ref(false);
@@ -262,7 +280,7 @@ const form = reactive({
 
 /*
 |--------------------------------------------------------------------------
-| FILTER THREADS
+| Filtered threads
 |--------------------------------------------------------------------------
 */
 
@@ -275,7 +293,6 @@ const filteredThreads = computed(() => {
 
   return threads.value.filter((thread) => {
     const title = thread.title?.toLowerCase() ?? "";
-
     const username = thread.user?.username?.toLowerCase() ?? "";
 
     return title.includes(query) || username.includes(query);
@@ -284,13 +301,35 @@ const filteredThreads = computed(() => {
 
 /*
 |--------------------------------------------------------------------------
-| FETCH GAME
+| Breadcrumbs
+|--------------------------------------------------------------------------
+*/
+
+const setGameBreadcrumbs = () => {
+  if (!game.value) return;
+
+  setBreadcrumbs([
+    {
+      label: "Community",
+      to: "/community",
+    },
+    {
+      label: game.value.name,
+    },
+  ]);
+};
+
+/*
+|--------------------------------------------------------------------------
+| Game
 |--------------------------------------------------------------------------
 */
 
 const fetchGame = async () => {
   try {
-    game.value = await $fetch(`/api/games/${rawgId}`);
+    game.value = await $fetch(`/api/games/${rawgId.value}`);
+
+    setGameBreadcrumbs();
   } catch (error) {
     console.error("Error loading RAWG game:", error);
 
@@ -300,13 +339,13 @@ const fetchGame = async () => {
 
 /*
 |--------------------------------------------------------------------------
-| FETCH THREADS
+| Threads
 |--------------------------------------------------------------------------
 */
 
 const fetchThreads = async () => {
   try {
-    threads.value = await apiFetch(`community/games/${rawgId}`);
+    threads.value = await apiFetch(`community/games/${rawgId.value}`);
   } catch (error) {
     console.error("Error loading game discussions:", error);
 
@@ -316,9 +355,15 @@ const fetchThreads = async () => {
 
 /*
 |--------------------------------------------------------------------------
-| CREATE FORM
+| Create form
 |--------------------------------------------------------------------------
 */
+
+const resetForm = () => {
+  form.title = "";
+  form.body = "";
+  errors.value = {};
+};
 
 const toggleCreateForm = () => {
   showCreateForm.value = !showCreateForm.value;
@@ -328,22 +373,14 @@ const toggleCreateForm = () => {
   }
 };
 
-const resetForm = () => {
-  form.title = "";
-  form.body = "";
-
-  errors.value = {};
-};
-
 const cancelCreate = () => {
   resetForm();
-
   showCreateForm.value = false;
 };
 
 /*
 |--------------------------------------------------------------------------
-| CREATE THREAD
+| Create thread
 |--------------------------------------------------------------------------
 */
 
@@ -354,16 +391,13 @@ const createThread = async () => {
   try {
     const response = await apiFetch("community/threads", {
       method: "POST",
-
       body: {
         title: form.title,
         body: form.body,
 
         rawg_id: game.value.id,
         name: game.value.name,
-
         release_date: game.value.released ?? null,
-
         image: game.value.background_image ?? null,
       },
     });
@@ -371,7 +405,6 @@ const createThread = async () => {
     showToast(response.message);
 
     resetForm();
-
     showCreateForm.value = false;
 
     await fetchThreads();
@@ -392,19 +425,50 @@ const createThread = async () => {
 
 /*
 |--------------------------------------------------------------------------
-| LOAD PAGE
+| Page loading
 |--------------------------------------------------------------------------
 */
 
-onMounted(async () => {
-  try {
-    if (!user.value) {
-      await fetchUser();
-    }
+const loadPage = async () => {
+  pending.value = true;
 
+  try {
     await Promise.all([fetchGame(), fetchThreads()]);
   } finally {
     pending.value = false;
   }
+};
+
+/*
+|--------------------------------------------------------------------------
+| Route changes
+|--------------------------------------------------------------------------
+*/
+
+watch(
+  () => route.params.rawgId,
+  async (newRawgId, oldRawgId) => {
+    if (newRawgId === oldRawgId) return;
+
+    search.value = "";
+    resetForm();
+    showCreateForm.value = false;
+
+    await loadPage();
+  },
+);
+
+/*
+|--------------------------------------------------------------------------
+| Page initialization
+|--------------------------------------------------------------------------
+*/
+
+onMounted(async () => {
+  if (!user.value) {
+    await fetchUser();
+  }
+
+  await loadPage();
 });
 </script>
