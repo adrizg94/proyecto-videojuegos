@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -39,13 +40,15 @@ class AdminPanelProvider extends PanelProvider
                 'Catalog',
             ])
 
+            ->userMenuItems([
+                Action::make('back-to-nextplay')
+                    ->label('Back to NextPlay')
+                    ->url(config('app.frontend_url'))
+                    ->icon('heroicon-o-arrow-left'),
+            ])
             ->colors([
                 // Front: #5600c5
                 'primary' => Color::hex('#5600c5'),
-
-                // Front surface: #1e1c40
-                // Gives Filament's neutral palette a purple/dark tone.
-                // 'gray' => Color::hex('#1e1c40'),
 
                 // Front success: #5be669
                 'success' => Color::hex('#5be669'),

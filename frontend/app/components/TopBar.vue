@@ -2,9 +2,10 @@
 
 <template>
   <header class="w-full flex items-center h-15.5 p-2">
-    <Breadcrumbs class="mt-2 ml-5" />
+    <ClientOnly>
+      <Breadcrumbs class="mt-2 ml-5" />
+    </ClientOnly>
     <div class="ml-auto">
-
       <!-- Not authenticated -->
       <NuxtLink
         v-if="!isAuthenticated"

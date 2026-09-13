@@ -20,7 +20,8 @@ export default defineNuxtConfig({
     geminiApiKey: "",
     steamApiKey: "",
     public: {
-      api: "http://localhost:8000",
+      api: process.env.NUXT_PUBLIC_API_URL,
+      adminUrl: process.env.NUXT_PUBLIC_ADMIN_URL,
     },
   },
 });

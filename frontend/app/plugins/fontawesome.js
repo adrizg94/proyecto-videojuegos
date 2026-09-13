@@ -49,6 +49,7 @@ import {
   faCalendar,
   faIdCard,
   faHouse,
+  faUserShield,
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
@@ -111,6 +112,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     faCalendar,
     faIdCard,
     faHouse,
+    faUserShield,
   );
 
   nuxtApp.vueApp.component("FontAwesomeIcon", FontAwesomeIcon);

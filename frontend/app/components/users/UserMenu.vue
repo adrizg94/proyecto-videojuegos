@@ -8,7 +8,19 @@
       <FontAwesomeIcon icon="fa-id-card" />
       My profile
     </NuxtLink>
+    <div v-if="isAuthenticated && user.is_admin">
+      <div class="my-1 border-t border-white/10" />
 
+      <NuxtLink
+        :to="config.public.adminUrl"
+        external
+        @click="emit('close')"
+        class="block rounded px-3 py-2 hover:bg-hover"
+      >
+        <FontAwesomeIcon icon="fa-user-shield" />
+        Admin
+      </NuxtLink>
+    </div>
     <div class="my-1 border-t border-white/10" />
 
     <NuxtLink
@@ -39,6 +51,10 @@ const propps = defineProps({
 });
 
 const emit = defineEmits(["close"]);
+
+const config = useRuntimeConfig();
+
+const { user, isAuthenticated } = useAuth();
 
 const { logout } = useAuth();
 </script>

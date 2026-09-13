@@ -43,7 +43,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
 
     public function releaseAlertGames()
     {
-        return $this->belongsToMany(Game::class, 'release_alerts')->withTimestamps();
+        return $this->belongsToMany(Game::class, 'release_alerts')->withPivot('notified_at')->withTimestamps();
     }
 
     public function reviews()

@@ -25,7 +25,7 @@ class Game extends Model
 
     public function releaseAlertForUsers()
     {
-        return $this->belongsToMany(User::class, 'release_alerts')->withTimestamps();
+        return $this->belongsToMany(User::class, 'release_alerts')->withPivot('notified_at')->withTimestamps();
     }
 
     public function reviews()
