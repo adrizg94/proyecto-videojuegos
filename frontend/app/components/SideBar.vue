@@ -8,18 +8,6 @@
         />
         <img src="/images/branding/nextplay.png" class="h-10.5" />
       </NuxtLink>
-      <!-- <NuxtLink to="/" class="flex items-center gap-2 h-12 border-b-2 border-white/10">
-        <div
-          class="flex size-9 px-1 items-center justify-start gap-0.5 rounded-lg bg-primary"
-        >
-          <span class="text-lg font-black">N</span>
-          <FontAwesomeIcon icon="fa-play" class="text-xs" />
-        </div>
-
-        <span class="text-xl font-bold">
-          Next<span class="text-primary-light">Play</span>
-        </span>
-      </NuxtLink> -->
       <NuxtLink
         to="/"
         class="btn-primary"

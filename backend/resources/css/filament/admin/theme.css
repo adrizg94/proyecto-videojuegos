@@ -1,0 +1,474 @@
+@import "../../../../vendor/filament/filament/resources/css/theme.css";
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+/* =========================================================
+   NEXTPLAY THEME
+   ========================================================= */
+
+:root {
+    --nextplay-background: #0d0b22;
+    --nextplay-surface: #1e1c40;
+    --nextplay-surface-light: #25224b;
+
+    --nextplay-primary: #5600c5;
+    --nextplay-primary-light: #6c01e4;
+    --nextplay-accent: #e14cff;
+
+    --nextplay-hover: #2d2858;
+    --nextplay-success: #5be669;
+
+    --nextplay-text: #ffffff;
+    --nextplay-text-muted: #a4a3ac;
+
+    --nextplay-border: rgba(255, 255, 255, 0.08);
+}
+
+/* =========================================================
+   GENERAL PAGE
+   ========================================================= */
+
+.fi-body {
+    background-color: var(--nextplay-background) !important;
+    color: var(--nextplay-text);
+}
+
+.fi-main-ctn {
+    background-color: var(--nextplay-background) !important;
+}
+
+.fi-main {
+    background-color: transparent;
+}
+
+/* =========================================================
+   TOPBAR
+   ========================================================= */
+
+.fi-topbar-ctn {
+    background-color: var(--nextplay-surface) !important;
+}
+
+@media (min-width: 1024px) {
+    .fi-topbar-ctn {
+        inset-inline-start: 0 !important;
+        width: 100% !important;
+    }
+
+    .fi-topbar {
+        width: 100% !important;
+
+        padding-inline-start: 0 !important;
+        padding-inline-end: 1rem !important;
+
+        background-color: var(--nextplay-surface) !important;
+
+        box-shadow: none !important;
+        border-bottom: none !important;
+    }
+}
+
+/* =========================================================
+   NEXTPLAY LOGO
+   ========================================================= */
+
+.fi-topbar-start,
+.fi-topbar-start > a {
+    padding: 0 !important;
+
+    width: auto !important;
+    max-width: none !important;
+
+    height: auto !important;
+    max-height: none !important;
+
+    overflow: visible !important;
+}
+
+.fi-topbar .fi-logo {
+    margin: 0.3rem 0 0 0.3rem !important;
+    margin-bottom: 0 !important;
+
+    width: auto !important;
+    max-width: none !important;
+
+    height: 3.2rem !important;
+    max-height: 3.2rem !important;
+
+    overflow: visible !important;
+}
+
+.fi-topbar img[src*="/images/branding/logo.png"] {
+    height: 3rem !important;
+    width: auto !important;
+    max-height: none !important;
+}
+
+.fi-topbar img[src*="/images/branding/nextplay.png"] {
+    margin-top: 0.15rem !important;
+}
+
+.nextplay-brand {
+    display: flex;
+    align-items: center;
+
+    gap: 0.25rem;
+
+    height: 3rem;
+    width: max-content;
+
+    flex-shrink: 0;
+
+    transform: translateX(-0.4rem);
+    transform-origin: left center;
+}
+
+.nextplay-brand-icon {
+    display: block;
+
+    height: 3rem;
+    width: auto;
+    max-height: none !important;
+
+    object-fit: contain;
+}
+
+.nextplay-brand-wordmark {
+    display: block;
+
+    height: 2.35rem;
+    width: auto;
+    max-height: none !important;
+
+    object-fit: contain;
+}
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+.fi-sidebar {
+    background-color: var(--nextplay-surface) !important;
+
+    box-shadow: none !important;
+    border-right: none !important;
+}
+
+.fi-sidebar-nav {
+    background-color: var(--nextplay-surface) !important;
+    padding-top: 0.5rem !important;
+}
+
+.fi-sidebar-nav-groups {
+    gap: 0.8rem !important;
+}
+
+.fi-sidebar-header {
+    background-color: var(--nextplay-surface) !important;
+
+    box-shadow: none !important;
+    border-bottom: none !important;
+}
+
+/* Navigation group titles */
+
+.fi-sidebar-group-label {
+    color: var(--nextplay-text-muted) !important;
+}
+
+/* Navigation items */
+
+.fi-sidebar-item-button {
+    border-radius: 0.5rem;
+
+    transition:
+        background-color 150ms ease,
+        color 150ms ease;
+}
+
+.fi-sidebar-item-label {
+    color: var(--nextplay-text) !important;
+}
+
+.fi-sidebar-item-button:hover {
+    background-color: var(--nextplay-hover) !important;
+}
+
+/* Selected route */
+
+.fi-sidebar-item-active > .fi-sidebar-item-button {
+    background-color: var(--nextplay-primary) !important;
+}
+
+.fi-sidebar-item-active .fi-sidebar-item-label,
+.fi-sidebar-item-active .fi-sidebar-item-icon {
+    color: white !important;
+}
+
+/* =========================================================
+   PAGE HEADERS / BREADCRUMBS
+   ========================================================= */
+
+.fi-header-heading {
+    color: var(--nextplay-text) !important;
+}
+
+.fi-breadcrumbs {
+    color: var(--nextplay-text-muted);
+}
+
+/* =========================================================
+   TABLES
+   ========================================================= */
+
+.fi-ta-ctn {
+    background-color: var(--nextplay-surface) !important;
+
+    border: 1px solid var(--nextplay-border) !important;
+
+    box-shadow: none !important;
+}
+
+/* Table header */
+
+.fi-ta-table thead {
+    background-color: var(--nextplay-surface-light) !important;
+}
+
+/* Rows */
+
+.fi-ta-row {
+    background-color: var(--nextplay-surface) !important;
+    border-color: var(--nextplay-border) !important;
+
+    transition: background-color 150ms ease;
+}
+
+.fi-ta-row:hover {
+    background-color: var(--nextplay-hover) !important;
+}
+
+.fi-ta-table > tbody {
+    border-color: var(--nextplay-border) !important;
+}
+
+/* Table footer / pagination */
+
+.fi-ta-ctn > footer {
+    background-color: var(--nextplay-surface) !important;
+    border-color: var(--nextplay-border) !important;
+}
+
+/* =========================================================
+   SECTIONS / CARDS
+   ========================================================= */
+
+.fi-section {
+    background-color: var(--nextplay-surface) !important;
+
+    border: 1px solid var(--nextplay-border) !important;
+
+    box-shadow: none !important;
+}
+
+.fi-section-header {
+    border-color: var(--nextplay-border) !important;
+}
+
+/* =========================================================
+   FORMS / INPUTS
+   ========================================================= */
+
+.fi-input-wrp {
+    background-color: var(--nextplay-surface-light) !important;
+
+    border-color: var(--nextplay-border) !important;
+
+    box-shadow: none !important;
+}
+
+.fi-input-wrp:focus-within {
+    border-color: var(--nextplay-primary-light) !important;
+
+    box-shadow: 0 0 0 1px var(--nextplay-primary-light) !important;
+}
+
+.fi-input,
+.fi-select-input {
+    color: var(--nextplay-text) !important;
+}
+
+.fi-input::placeholder {
+    color: var(--nextplay-text-muted) !important;
+}
+
+/* =========================================================
+   TABS
+   ========================================================= */
+
+.fi-tabs {
+    background-color: var(--nextplay-surface) !important;
+
+    border-color: var(--nextplay-border) !important;
+
+    box-shadow: none !important;
+}
+
+.fi-tabs-item {
+    transition:
+        background-color 150ms ease,
+        color 150ms ease;
+}
+
+.fi-tabs-item:hover {
+    background-color: var(--nextplay-hover) !important;
+}
+
+/* =========================================================
+   DROPDOWNS
+   ========================================================= */
+
+.fi-dropdown-panel {
+    background-color: var(--nextplay-surface) !important;
+
+    border: 1px solid var(--nextplay-border) !important;
+
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* =========================================================
+   MODALS
+   ========================================================= */
+
+.fi-modal-window {
+    background-color: var(--nextplay-surface) !important;
+
+    border: 1px solid var(--nextplay-border) !important;
+}
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.fi-btn {
+    border-radius: 0.5rem;
+
+    transition:
+        background-color 150ms ease,
+        transform 100ms ease;
+}
+
+.fi-btn:active {
+    transform: scale(0.98);
+}
+
+.fi-btn.fi-color-primary:not(.fi-outlined) {
+    background-color: var(--nextplay-primary) !important;
+    color: #ffffff !important;
+}
+
+.fi-btn.fi-color-primary:not(.fi-outlined):hover {
+    background-color: var(--nextplay-primary-light) !important;
+    color: #ffffff !important;
+}
+
+/* =========================================================
+   BADGES
+   ========================================================= */
+
+.fi-badge {
+    border-radius: 0.4rem;
+}
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+* {
+    scrollbar-width: thin;
+
+    scrollbar-color: var(--nextplay-hover) var(--nextplay-background);
+}
+
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: var(--nextplay-background);
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: var(--nextplay-hover);
+    border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background-color: var(--nextplay-primary-light);
+}
+
+/* =========================================================
+   LOGIN / SIMPLE AUTH PAGES
+   ========================================================= */
+
+.fi-simple-main-ctn {
+    background-color: var(--nextplay-background) !important;
+}
+
+.fi-simple-main {
+    background-color: var(--nextplay-surface) !important;
+
+    border: 1px solid var(--nextplay-border) !important;
+
+    box-shadow: none !important;
+}
+
+.fi-simple-header .fi-logo {
+    height: 4rem !important;
+    max-height: 4rem !important;
+
+    width: auto !important;
+    max-width: none !important;
+}
+
+.fi-simple-main .fi-input-wrp {
+    background-color: var(--nextplay-surface-light) !important;
+}
+
+.fi-simple-main .fi-btn {
+    background-color: var(--nextplay-primary) !important;
+}
+
+.fi-simple-main .fi-btn:hover {
+    background-color: var(--nextplay-primary-light) !important;
+}
+
+/* =========================================================
+   SEARCHABLE SELECT INPUT
+   ========================================================= */
+
+input.fi-input[placeholder="Start typing to search..."] {
+    background-color: var(--nextplay-surface-light) !important;
+
+    color: var(--nextplay-text) !important;
+    caret-color: var(--nextplay-text) !important;
+}
+
+input.fi-input[placeholder="Start typing to search..."]::placeholder {
+    color: var(--nextplay-text-muted) !important;
+    opacity: 1 !important;
+}
+
+/* =========================================================
+   TOGGLES
+   ========================================================= */
+
+.fi-toggle.fi-toggle-on:not(:disabled) {
+    background-color: var(--nextplay-primary) !important;
+}
+
+.fi-toggle.fi-toggle-on:not(:disabled):hover {
+    background-color: var(--nextplay-primary-light) !important;
+}

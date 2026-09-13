@@ -16,9 +16,10 @@ class UserSeeder extends Seeder
         User::factory(30)->create();
 
         User::factory()->create([
-            'username' => 'demo',
-            'email' => 'demo@nextplay.test',
+            'username' => 'admin',
+            'email' => 'admin@nextplay.test',
             'password' => Hash::make('password'),
+            'is_admin' => true,
         ]);
     }
 }
