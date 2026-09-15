@@ -2,7 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 
 // Configuración
 // const MODEL = "gemini-3.8-flash"; // Principal candidato actual.             //SATURADO
-// const MODEL = "gemini-3.7-flash"; // Alternativa Flash reciente.                //DEADLINE EXCEDED
+// const MODEL = "gemini-3.7-flash"; // Alternativa Flash reciente.             //DEADLINE EXCEDED
 // const MODEL = "gemini-3.5-flash"; // Ya comprobaste que responde bien.       //FUNCIONA - 20 peticiones diarias
 const MODEL = "gemini-3.5-flash-lite"; // Interesante para reducir consumo.     //LA QUE MEJOR FUNCIONA
 // const MODEL = "gemini-2.5-flash"; // Alternativa estable y madura.

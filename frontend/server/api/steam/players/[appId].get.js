@@ -17,11 +17,6 @@ export default defineEventHandler(async (event) => {
         },
       },
     );
-
-    // return {
-    //   appId,
-    //   players: data.response.player_count,
-    // };
   } catch (error) {
     console.error("Steam API error:", error);
 

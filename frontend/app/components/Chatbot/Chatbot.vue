@@ -10,11 +10,6 @@
       <FontAwesomeIcon icon="fa-comment" class="text-3xl" />
 
       <FontAwesomeIcon icon="fa-robot" class="absolute text-xl text-primary" />
-
-      <!-- <FontAwesomeIcon
-        icon="fa-wand-magic-sparkles"
-        class="text-3xl"
-      /> -->
     </button>
     <ChatbotWindow v-if="showChat" @close="showChat = false" />
   </section>

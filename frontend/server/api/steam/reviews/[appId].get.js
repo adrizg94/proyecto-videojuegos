@@ -9,19 +9,12 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    return await $fetch(
-      `https://store.steampowered.com/appreviews/${appId}`,
-      {
-        query: {
-          json: 1,
-          language: "all",
-        },
+    return await $fetch(`https://store.steampowered.com/appreviews/${appId}`, {
+      query: {
+        json: 1,
+        language: "all",
       },
-    );
-    // return {
-    //   appId,
-    //   data,
-    // };
+    });
   } catch (error) {
     console.error("Steam API error:", error);
 

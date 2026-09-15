@@ -1,26 +1,3 @@
-<!-- <template>
-  <article
-    class="flex-1 grid grid-cols-[1fr_2fr_1fr] items-center px-2 max-w-1/2 h-10 border-b-2 border-hover"
-  >
-    <div class="flex gap-4">
-      <div>
-        {{ viewDate }}
-        <FontAwesomeIcon icon="fa-calendar-day" />
-      </div>
-      <button><FontAwesomeIcon icon="fa-crosshairs" /></button>
-    </div>
-    <div class="flex justify-center">
-      <div v-for="(value, index) in period">
-        {{ value }}
-        <span v-if="index < period.length - 1" class="mx-2">|</span>
-      </div>
-    </div>
-    <div class="flex justify-end items-center gap-2">
-      Show filters<FontAwesomeIcon icon="fa-filter" />
-    </div>
-  </article>
-</template> -->
-
 <template>
   <section
     aria-label="Release navigation"
@@ -196,29 +173,6 @@ const viewDate = computed(() => {
   }
 
   // Calcular día/mes inicial/final para el periodo semanal
-  // if (props.selectPeriod === "Weekly") {
-  //   const startWeek = new Date(date);
-
-  //   const daysFromMonday = (startWeek.getDay() + 6) % 7;
-  //   startWeek.setDate(startWeek.getDate() - daysFromMonday);
-
-  //   const endWeek = new Date(startWeek);
-  //   endWeek.setDate(endWeek.getDate() + 6);
-
-  //   const startMonth = date.toLocaleString("en-US", {
-  //     month: "short",
-  //   });
-
-  //   const endMonth = endWeek.toLocaleString("en-US", {
-  //     month: "short",
-  //   });
-
-  //   if (date.getMonth() === endWeek.getMonth()) {
-  //     return `${startMonth} ${date.getDate()} – ${endWeek.getDate()}`;
-  //   }
-
-  //   return `${startMonth} ${date.getDate()} – ${endMonth} ${endWeek.getDate()}`;
-  // }
   if (props.selectPeriod === "Weekly") {
     const currentYear = new Date().getFullYear();
 
